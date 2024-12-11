@@ -6,7 +6,7 @@ public class InitFenceScript : MonoBehaviour
 {
     public GameObject fencePrefab;
     public float fenceSpacing = 5.7f; // Distance entre les clôtures
-    public float areaSize = 400f;    // Taille de la zone (longueur d'un côté du carré)
+    public float areaSize = 300f;    // Taille de la zone (longueur d'un côté du carré)
 
     void Start()
     {
