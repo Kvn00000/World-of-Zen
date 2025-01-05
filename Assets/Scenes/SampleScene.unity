@@ -607,6 +607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interiorSceneName: InteriorScene
+  exteriorSceneName: SampleScene
 --- !u!65 &630444353
 BoxCollider:
   m_ObjectHideFlags: 0
