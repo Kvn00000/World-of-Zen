@@ -464,6 +464,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   orientation: {fileID: 1434304948}
+  canMove: 1
 --- !u!54 &390006614
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -749,7 +750,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Bienvenue ! \n\nVeuillez entrer dans la maison pour nous aider \xE0 restaurer
-    ces tableaux.\n\nPour commencer le jeu, tapez sur \"Entr\xE9e\"."
+    nos tableaux.\n\nPour commencer le jeu, tapez sur \"Entr\xE9e\"."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1196,6 +1197,7 @@ GameObject:
   - component: {fileID: 1171758859}
   - component: {fileID: 1171758858}
   - component: {fileID: 1171758857}
+  - component: {fileID: 1171758861}
   m_Layer: 0
   m_Name: PopupWindow
   m_TagString: Untagged
@@ -1291,6 +1293,20 @@ Transform:
   - {fileID: 692865302}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1171758861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171758856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e311d187ad85e994eb8d973d946aab49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  popupWindow: {fileID: 1171758856}
+  playerMovement: {fileID: 390006613}
 --- !u!1001 &1290437960
 PrefabInstance:
   m_ObjectHideFlags: 0

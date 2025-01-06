@@ -14,7 +14,6 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask whatIsGround;
     bool grounded;
 
-
     public Transform orientation;
 
     float horizontalInput;
@@ -24,50 +23,71 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
 
-    private void Start(){
+    [Header("Gameplay")]
+    public bool canMove = true; // Nouvelle variable pour contrôler le mouvement
+
+    private void Start()
+    {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
     }
 
     void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight*0.5f+0.2f, whatIsGround);
-        MyInput();
-        speedControl();
+        // Bloquer les mouvements si canMove est false
+        if (!canMove)
+        {
+            rb.velocity = Vector3.zero; // Stoppe le joueur complètement
+            return;
+        }
 
-        //Apply drag if on the ground
-        if(grounded){
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        MyInput();
+        SpeedControl();
+
+        // Appliquer le drag si le joueur est au sol
+        if (grounded)
+        {
             rb.drag = groundDrag;
-        }else{
+        }
+        else
+        {
             rb.drag = 0;
         }
     }
 
     void FixedUpdate()
     {
-        MovePlayer();
+        // Ne pas appliquer de mouvement si canMove est false
+        if (canMove)
+        {
+            MovePlayer();
+        }
     }
 
-    private void MyInput(){
-        //Get the inputs
+    private void MyInput()
+    {
+        // Récupérer les entrées clavier
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
     }
 
-    private void MovePlayer(){
-        //Move the player based on the orientation
-        moveDirection = orientation.forward*verticalInput + orientation.right * horizontalInput;
-        rb.AddForce(moveDirection.normalized*moveSpeed*10f, ForceMode.Force);
+    private void MovePlayer()
+    {
+        // Déplacer le joueur en fonction de l'orientation
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
     }
 
-    private void speedControl(){
-        //Limit the speed of the player
+    private void SpeedControl()
+    {
+        // Limiter la vitesse du joueur
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        if(flatVel.magnitude > moveSpeed){
+        if (flatVel.magnitude > moveSpeed)
+        {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
     }
-    
 }
