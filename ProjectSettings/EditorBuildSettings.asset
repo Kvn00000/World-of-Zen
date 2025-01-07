@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InteriorScene.unity
     guid: 7795d7476070f4522be135a4383f8169
+  - enabled: 1
+    path: Assets/Scenes/SceneRespiration2D.unity
+    guid: 5053327033b011140b203b697670fd4e
   m_configObjects: {}

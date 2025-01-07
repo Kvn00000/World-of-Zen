@@ -340,6 +340,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 478108, guid: 14691c451e07ff94cb94be3f44e72ab7, type: 3}
   m_PrefabInstance: {fileID: 67709003}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &84223529
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 84223531}
+  - component: {fileID: 84223530}
+  m_Layer: 0
+  m_Name: Opacity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &84223530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84223529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fecedf75a49c9f4a877590801ad8fa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetMaterial: {fileID: 2100000, guid: a3a0af71dcd0e7f4e9a462398ffce63e, type: 2}
+  hdrIntensity: -10
+--- !u!4 &84223531
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84223529}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -423.19162, y: -17.796446, z: 330.06302}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &137084717 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 164190, guid: 14691c451e07ff94cb94be3f44e72ab7, type: 3}
@@ -2080,7 +2126,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Voici notre maison contenant de vieux tableaux qui doivent \xEAtre restaur\xE9s
     !\n\nPour restaurer les tableaux, vous devez vous placer devant un tableau et
-    faire un clic gauche dessus. Ensuite, des exercices de respiration vous seront
+    appuyer sur la touche \"e\". Ensuite, des exercices de respiration vous seront
     propos\xE9s. Si vous r\xE9ussissez, le tableau sera restaur\xE9 !\n\nBonne chance
     ! Pour vous d\xE9placer, appuyez sur \"Entr\xE9e\"."
   m_isRightToLeft: 0
@@ -3006,3 +3052,4 @@ SceneRoots:
   - {fileID: 1355156319}
   - {fileID: 316256805}
   - {fileID: 42518589}
+  - {fileID: 84223531}
