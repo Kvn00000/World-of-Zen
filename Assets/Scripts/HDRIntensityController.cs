@@ -3,7 +3,7 @@ using UnityEngine;
 public class HDRIntensityController : MonoBehaviour
 {
     public Material targetMaterial; // Matériau dont on veut modifier l'intensité HDR
-    public float hdrIntensity = -10f; // Intensité HDR de base (limitée entre -10 et 10)
+    public float hdrIntensity = -1f; // Intensité HDR de base (limitée entre -10 et 10)
     private Color hdrBaseColor = Color.white; // Couleur HDR de base (fixée à blanc)
 
     void Start()
