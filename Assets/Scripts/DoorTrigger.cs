@@ -53,6 +53,7 @@ private void SavePlayerPosition()
         // Stockez la position du joueur avant de changer de scène
         GameManager.Instance.playerPosition = transform.position;
         GameManager.Instance.positionSaved = true;
+        Debug.Log("Player position saved: " + GameManager.Instance.playerPosition);
     }
 
     private void ToggleScene()

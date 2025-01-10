@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     public Vector3 playerPosition; // Position du joueur
+    //public GameObject playerPosition; // Référence au joueur
     public bool positionSaved = false; // Si une position a été sauvegardée
 
     private void Awake()
