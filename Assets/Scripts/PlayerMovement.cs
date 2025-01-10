@@ -30,6 +30,13 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        // Si une position est sauvegardée, appliquez-la
+        if (GameManager.Instance.positionSaved)
+        {
+            transform.position = GameManager.Instance.playerPosition;
+            GameManager.Instance.positionSaved = false;
+        }
     }
 
     void Update()

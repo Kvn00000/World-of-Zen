@@ -7,9 +7,16 @@ public class CanvasManager : MonoBehaviour
 
     void Start()
     {
+        if(GameManager.Instance.positionSaved){
+            canvas.SetActive(false);
+            playerMovement.canMove = true;
+        }
+        else
+        {
         // Afficher le Canvas et désactiver le mouvement du joueur au début
         canvas.SetActive(true);
         playerMovement.canMove = false;
+        }
     }
 
     void Update()

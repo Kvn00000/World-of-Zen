@@ -33,6 +33,7 @@ public class DoorTrigger : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 Debug.Log("Player has triggered the door with Raycast and pressed 'E' to switch scenes!");
+                SavePlayerPosition();
                 ToggleScene();
                 interactionCanvas.SetActive(false); // Hide the Canvas once the scene is changed
             }
@@ -45,6 +46,13 @@ public class DoorTrigger : MonoBehaviour
                 interactionCanvas.SetActive(false);
             }
         }
+    }
+
+private void SavePlayerPosition()
+    {
+        // Stockez la position du joueur avant de changer de scène
+        GameManager.Instance.playerPosition = transform.position;
+        GameManager.Instance.positionSaved = true;
     }
 
     private void ToggleScene()
