@@ -1558,6 +1558,11 @@ MonoBehaviour:
   cameraPos: {fileID: 754203431}
   pointerDistance: 5
   interactionCanvas: {fileID: 280443554}
+  interiorCanva: {fileID: 384095994}
+  paintLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  paintCanva: {fileID: 107480712}
 --- !u!1001 &478872572
 PrefabInstance:
   m_ObjectHideFlags: 0
