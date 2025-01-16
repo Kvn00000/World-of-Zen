@@ -6,6 +6,12 @@ public class DoorTrigger : MonoBehaviour
     public string interiorSceneName; // Name of the interior scene
     public string exteriorSceneName; // Name of the exterior scene
     public LayerMask doorLayer; // Layer mask to filter out only the door or trigger objects
+
+
+    public bool inside = false;
+    public GameObject player;
+    public GameObject insidePos;
+    public GameObject outsidePos;
     public Transform cameraPos; // The camera position to cast the ray from
     public float pointerDistance = 3f; // Raycast distance to detect doors
     public GameObject interactionCanvas; // Reference to the Canvas that will appear when the player detects the door
@@ -33,7 +39,6 @@ public class DoorTrigger : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 Debug.Log("Player has triggered the door with Raycast and pressed 'E' to switch scenes!");
-                SavePlayerPosition();
                 ToggleScene();
                 interactionCanvas.SetActive(false); // Hide the Canvas once the scene is changed
             }
@@ -48,32 +53,23 @@ public class DoorTrigger : MonoBehaviour
         }
     }
 
-private void SavePlayerPosition()
-    {
-        // Stockez la position du joueur avant de changer de scène
-        GameManager.Instance.playerPosition = transform.position;
-        GameManager.Instance.positionSaved = true;
-        Debug.Log("Player position saved: " + GameManager.Instance.playerPosition);
-    }
 
     private void ToggleScene()
     {
         // Get the current scene name
         string currentSceneName = SceneManager.GetActiveScene().name;
 
-        if (currentSceneName == exteriorSceneName)
+        if (inside == false)
         {
             Debug.Log("Switching to interior scene: " + interiorSceneName);
-            SceneManager.LoadScene(interiorSceneName);
-        }
-        else if (currentSceneName == interiorSceneName)
-        {
-            Debug.Log("Switching to exterior scene: " + exteriorSceneName);
-            SceneManager.LoadScene(exteriorSceneName);
+            player.transform.position = insidePos.transform.position;
+            inside = true;
         }
         else
         {
-            Debug.LogError("Current scene name does not match known scenes!");
+            Debug.Log("Switching to exterior scene: " + exteriorSceneName);
+            player.transform.position = outsidePos.transform.position;
+            inside = false;
         }
     }
 }
