@@ -15,7 +15,7 @@ public class LireFichierTexte : MonoBehaviour
         // Spécifiez le chemin du dossier contenant le fichier .txt
         string dossier = "/Users/claire/Documents/OpenSignals (r)evolution/temp"; 
         // Lire le seul fichier .txt dans ce dossier
-        cheminFichier = TrouverFichierTexte(dossier);
+        // cheminFichier = TrouverFichierTexte(dossier);
     }
 
     void Update()
@@ -23,7 +23,7 @@ public class LireFichierTexte : MonoBehaviour
         if (Time.time - derniereLecture > intervalleLecture)
         {
             derniereLecture = Time.time;
-            LireDerniereLigne(cheminFichier);
+            // LireDerniereLigne(cheminFichier);
         }
     }
 
