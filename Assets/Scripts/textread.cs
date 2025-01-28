@@ -4,7 +4,8 @@ using System.Linq;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEditor.ShaderKeywordFilter;
-
+using TMPro;
+using System.Linq;
 
 public class LireFichierTexte : MonoBehaviour
 {
@@ -17,9 +18,19 @@ public class LireFichierTexte : MonoBehaviour
     private float respirationInitTime = 3f;
     private bool resp = false;
     List<int> toPlot = new List<int>();
-    List<int> xAxis = new List<int>();
-    List<GameObject> circles = new List<GameObject>();
-    List<GameObject> lines = new List<GameObject>();
+    private List<GameObject> circles = new List<GameObject>();
+    private List<GameObject> lines = new List<GameObject>();
+
+
+    // BPM
+    private float BPMMinitTime = 60f;
+    private bool bpm = false;
+    private List<int> BPMvalues = new List<int>();
+
+    public TMP_InputField bpmInput; 
+    private string bpmText;
+
+
     string cheminFichier;
 
     private void Awake()
@@ -46,14 +57,23 @@ public class LireFichierTexte : MonoBehaviour
         {
             derniereLecture = Time.time;
             LireDerniereLigne(cheminFichier);
+            if(bpm){
+                bpmInput.text = bpmText;
+            }
         }
 
         if (Time.time - start > respirationInitTime){
             resp = true;
         }
+
+        if(Time.time - start > BPMMinitTime){
+            bpm = true;
+        }
+
         if(toPlot.Count > 0){
                 ShowGraph(toPlot);
         }
+
 
     }
 
@@ -98,13 +118,22 @@ public class LireFichierTexte : MonoBehaviour
             if (valeurs.Length >= 11)
             {
                 // Extraire les valeurs de A1 et A2 (en indexant correctement)
-                string bpm = valeurs[5]; // Colonne A1 (Index 5)
+                string bpmData = valeurs[5]; // Colonne A1 (Index 5)
                 string respiration = valeurs[6]; // Colonne A2 (Index 6)
                 
-                int randomValue = Random.Range(0, 1001);
-                toPlot.Add(randomValue);
-                // toPlot.Add(int.Parse(valeurs[6]));
+                BPMvalues.Add(int.Parse(bpmData));
+                if(bpm){
+                    BPMvalues.RemoveAt(0);
+                    int maxValue = BPMvalues.Max();
+                    int count = BPMvalues.Count(n => n >= (maxValue - 50));
+                    bpmText = (count/60).ToString();
+                }
 
+                //Respiration
+                // int randomValue = Random.Range(0, 1001);
+                // toPlot.Add(randomValue);
+                
+                toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
                     toPlot.RemoveAt(0);
                 }
@@ -122,8 +151,18 @@ public class LireFichierTexte : MonoBehaviour
                 valeurs = derniereLigne.Split('\t');
 
                 // Extraire les valeurs de A1 et A2 (en indexant correctement)
-                string bpm = valeurs[5]; // Colonne A1 (Index 5)
+                string bpmData = valeurs[5]; // Colonne A1 (Index 5)
                 string respiration = valeurs[6]; // Colonne A2 (Index 6)
+
+
+                BPMvalues.Add(int.Parse(bpmData));
+                if(bpm){
+                    BPMvalues.RemoveAt(0);
+                    int maxValue = BPMvalues.Max();
+                    int count = BPMvalues.Count(n => n >= (maxValue - 50));
+                    bpmText = (count/60).ToString();
+                }
+
 
                 toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
