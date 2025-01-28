@@ -11,14 +11,14 @@ public class LireFichierTexte : MonoBehaviour
     private float start =0f;
     // Lecture de fichier texte
     private float derniereLecture = 0f;
-    private float intervalleLecture = 0.2f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
+    private float intervalleLecture = 0.001f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
 
     // Respiration
     private float respirationInitTime = 3f;
     private bool resp = false;
     List<int> toPlot = new List<int>();
-    private List<GameObject> circles = new List<GameObject>(3000);
-    private List<GameObject> lines = new List<GameObject>(3000);
+    private List<GameObject> circles;
+    private List<GameObject> lines;
 
 
     // BPM
@@ -34,6 +34,9 @@ public class LireFichierTexte : MonoBehaviour
 
     private void Awake()
     {
+        circles = new List<GameObject>(3000);
+        lines = new List<GameObject>(3000);
+        
         graphContainer = transform.Find("Container").GetComponent<RectTransform>();
         // for (int i = 0; i < 15; i++)
         // {
@@ -136,7 +139,7 @@ public class LireFichierTexte : MonoBehaviour
                 if(resp){
                     toPlot.RemoveAt(0);
                 }
-
+                Debug.Log(circles.Count);
 
                 // Afficher les valeurs dans la console
                 // Debug.Log("BPM (A1): " + bpm);
@@ -175,8 +178,8 @@ public class LireFichierTexte : MonoBehaviour
 
 
                 // Afficher les valeurs dans la console
-                Debug.Log("BPM (A1): " + bpm);
-                Debug.Log("Respiration (A2): " + respiration);
+                // Debug.Log("BPM (A1): " + bpm);
+                // Debug.Log("Respiration (A2): " + respiration);
 
             }
         }
