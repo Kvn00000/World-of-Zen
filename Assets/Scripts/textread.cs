@@ -17,14 +17,14 @@ public class LireFichierTexte : MonoBehaviour
     private float respirationInitTime = 3f;
     private bool resp = false;
     List<int> toPlot = new List<int>();
-    private List<GameObject> circles = new List<GameObject>();
-    private List<GameObject> lines = new List<GameObject>();
+    private List<GameObject> circles = new List<GameObject>(3000);
+    private List<GameObject> lines = new List<GameObject>(3000);
 
 
     // BPM
     private float BPMMinitTime = 60f;
     private bool bpm = false;
-    private List<int> BPMvalues = new List<int>();
+    private List<int> BPMvalues = new List<int>(3000);
 
     public TextMeshProUGUI bpmInput; 
     private string bpmText;
@@ -129,10 +129,10 @@ public class LireFichierTexte : MonoBehaviour
                 }
 
                 //Respiration
-                // int randomValue = Random.Range(0, 1001);
-                // toPlot.Add(randomValue);
+                int randomValue = Random.Range(0, 1001);
+                toPlot.Add(randomValue);
 
-                toPlot.Add(int.Parse(valeurs[6]));
+                // toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
                     toPlot.RemoveAt(0);
                 }
@@ -154,7 +154,7 @@ public class LireFichierTexte : MonoBehaviour
                 string respiration = valeurs[6]; // Colonne A2 (Index 6)
 
 
-                BPMvalues.Add(int.Parse(bpmData));
+                // BPMvalues.Add(int.Parse(bpmData));
                 if(bpm){
                     BPMvalues.RemoveAt(0);
                     int maxValue = BPMvalues.Max();
@@ -163,7 +163,11 @@ public class LireFichierTexte : MonoBehaviour
                 }
 
 
-                toPlot.Add(int.Parse(valeurs[6]));
+                //Respiration
+                int randomValue = Random.Range(0, 1001);
+                toPlot.Add(randomValue);
+
+                // toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
                     toPlot.RemoveAt(0);
                     circles.RemoveAt(0);
