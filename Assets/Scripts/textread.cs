@@ -19,7 +19,7 @@ public class LireFichierTexte : MonoBehaviour
     List<int> toPlot = new List<int>();
     List<int> xAxis = new List<int>();
     List<GameObject> circles = new List<GameObject>();
-    private int count = 0;
+    List<GameObject> lines = new List<GameObject>();
     string cheminFichier;
 
     private void Awake()
@@ -52,12 +52,7 @@ public class LireFichierTexte : MonoBehaviour
             resp = true;
         }
         if(toPlot.Count > 0){
-            if (count > 15){
-
-            }else{
-
                 ShowGraph(toPlot);
-            }
         }
 
     }
@@ -105,8 +100,11 @@ public class LireFichierTexte : MonoBehaviour
                 // Extraire les valeurs de A1 et A2 (en indexant correctement)
                 string bpm = valeurs[5]; // Colonne A1 (Index 5)
                 string respiration = valeurs[6]; // Colonne A2 (Index 6)
-                toPlot.Add(int.Parse(valeurs[6]));
-                count++;
+                
+                int randomValue = Random.Range(0, 1001);
+                toPlot.Add(randomValue);
+                // toPlot.Add(int.Parse(valeurs[6]));
+
                 if(resp){
                     toPlot.RemoveAt(0);
                 }
@@ -152,33 +150,72 @@ public class LireFichierTexte : MonoBehaviour
     private RectTransform graphContainer;
     
 
-    private void CreateCircle(Vector2 anchoredPosition){
+    private GameObject CreateCircle(Vector2 anchoredPosition){
         GameObject gameObj = new GameObject("circle", typeof(Image));
         circles.Add(gameObj);
         gameObj.transform.SetParent(graphContainer, false);
         gameObj.GetComponent<Image>().sprite = circleSprite;
         RectTransform rectTransform = gameObj.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(11, 11);
+        rectTransform.sizeDelta = new Vector2(5, 5);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
+        return gameObj;
     }
 
     private void ShowGraph(List<int> valueList){
         float graphHeight = graphContainer.sizeDelta.y;
         float yMaximum = 1000f;
+
+        for(int i = 0; i < lines.Count; i++){
+            Destroy(lines[i]);
+        }
+        lines.Clear();
+
         for(int i = 0; i < circles.Count; i++){
             Destroy(circles[i]);
-            circles.RemoveAt(i);
         }
+        circles.Clear();
 
+        GameObject lastCircleGameObject = null;
         for(int i = 0; i < valueList.Count; i++){
             float xPosition = (i+1)*11 ;
             float yPosition = (valueList[i] / yMaximum) * graphHeight;
-            CreateCircle(new Vector2(xPosition, yPosition));
+            GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
+            if(lastCircleGameObject != null){
+                CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
+            }
+            lastCircleGameObject = cGO;
 
         }
     }
+
+
+    private void CreateDotConnection(Vector2 dotPosA, Vector2 dotPosB){
+        GameObject gameObj = new GameObject("dotConnection", typeof(Image));
+        lines.Add(gameObj);
+        gameObj.transform.SetParent(graphContainer, false);
+        gameObj.GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+        RectTransform rectTransform = gameObj.GetComponent<RectTransform>();
+        Vector2 dir = (dotPosB - dotPosA).normalized;
+        float distance = Vector2.Distance(dotPosA, dotPosB);
+        rectTransform.anchorMin = new Vector2(0, 0);
+        rectTransform.anchorMax = new Vector2(0, 0);
+        rectTransform.sizeDelta = new Vector2(distance, 3f);
+        rectTransform.anchoredPosition = dotPosA + dir * distance * 0.5f;
+        rectTransform.localEulerAngles = new Vector3(0, 0, GetAngleFromVectorFloat(dir));
+    }
+
+    private float GetAngleFromVectorFloat(Vector2 dir){
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if(n < 0){
+            n += 360;
+        }
+        return n;
+    }
+
+
     
 }
 
