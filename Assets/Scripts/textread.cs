@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEditor.ShaderKeywordFilter;
 using TMPro;
-using System.Linq;
 
 public class LireFichierTexte : MonoBehaviour
 {
@@ -27,7 +26,7 @@ public class LireFichierTexte : MonoBehaviour
     private bool bpm = false;
     private List<int> BPMvalues = new List<int>();
 
-    public TMP_InputField bpmInput; 
+    public TextMeshProUGUI bpmInput; 
     private string bpmText;
 
 
@@ -132,7 +131,7 @@ public class LireFichierTexte : MonoBehaviour
                 //Respiration
                 // int randomValue = Random.Range(0, 1001);
                 // toPlot.Add(randomValue);
-                
+
                 toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
                     toPlot.RemoveAt(0);
@@ -196,7 +195,7 @@ public class LireFichierTexte : MonoBehaviour
         gameObj.GetComponent<Image>().sprite = circleSprite;
         RectTransform rectTransform = gameObj.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(5, 5);
+        rectTransform.sizeDelta = new Vector2(2, 2);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
         return gameObj;
@@ -218,7 +217,7 @@ public class LireFichierTexte : MonoBehaviour
 
         GameObject lastCircleGameObject = null;
         for(int i = 0; i < valueList.Count; i++){
-            float xPosition = (i+1)*11 ;
+            float xPosition = (i+1)*0.55f ;
             float yPosition = (valueList[i] / yMaximum) * graphHeight;
             GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
             if(lastCircleGameObject != null){
