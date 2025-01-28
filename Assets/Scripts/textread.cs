@@ -166,7 +166,7 @@ public class LireFichierTexte : MonoBehaviour
 
     private void ShowGraph(List<int> valueList){
         float graphHeight = graphContainer.sizeDelta.y;
-        float yMaximum = 100f;
+        float yMaximum = 1000f;
         for(int i = 0; i < circles.Count; i++){
             Destroy(circles[i]);
             circles.RemoveAt(i);
