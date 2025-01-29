@@ -11,7 +11,7 @@ public class LireFichierTexte : MonoBehaviour
     private float start =0f;
     // Lecture de fichier texte
     private float derniereLecture = 0f;
-    private float intervalleLecture = 0.001f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
+    private float intervalleLecture = 0.2f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
 
     // Respiration
     private float respirationInitTime = 3f;
