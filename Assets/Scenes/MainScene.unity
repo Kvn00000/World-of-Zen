@@ -3230,10 +3230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd3ea62f2c142c345a9c767b145c5d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceMacAddress: BTH20:19:07:00:80:B3
-  samplingRate: 100
-  resolution: 10
-  circleSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &1005618242
 GameObject:
   m_ObjectHideFlags: 0
@@ -3440,11 +3436,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "En cliquant sur le bouton \"Tester mon niveau\", nous effectuerons une
-    calibration afin d'approximer votre niveau lors de nos jeux de respiration. Nous
-    proposons trois niveaux : d\xE9butant, interm\xE9diaire et avanc\xE9.\n\nLe bouton
-    \"Jouer\" vous permettra de lancer le niveau que nous vous recommandons. Si vous
-    souhaitez un niveau de jeu mieux adapt\xE9 \xE0 vous, nous vous conseillons de
-    tester votre niveau au pr\xE9alable."
+    calibration pendant X secondes afin d'approximer votre niveau lors de nos jeux
+    de respiration. Nous proposons trois niveaux : d\xE9butant, interm\xE9diaire
+    et avanc\xE9.\n\nLe bouton \"Jouer\" vous permettra de lancer le niveau que nous
+    vous recommandons. Si vous souhaitez un niveau de jeu mieux adapt\xE9 \xE0 vous,
+    nous vous conseillons de tester votre niveau au pr\xE9alable.\n\nLe slider, si
+    vous souhaitez choisir votre propre niveau, vous permet de le s\xE9lectionner
+    en fonction de sa position.\n\t- Une position entre 0 et 33 correspond au niveau
+    d\xE9butant.\n\t- Une position entre 34 et 66 correspond au niveau interm\xE9diaire.\n\t-
+    Une position sup\xE9rieure \xE0 66 correspond au niveau avanc\xE9."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4083,6 +4083,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1523748360}
   - {fileID: 1769944241}
   - {fileID: 2037236999}
   - {fileID: 596095046}
@@ -4328,10 +4329,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd3ea62f2c142c345a9c767b145c5d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceMacAddress: BTH20:19:07:00:80:B3
-  samplingRate: 100
-  resolution: 10
-  circleSprite: {fileID: 0}
 --- !u!4 &1413886504
 Transform:
   m_ObjectHideFlags: 0
@@ -4473,7 +4470,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1777739128}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1319166489}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5466,8 +5463,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -179}
-  m_SizeDelta: {x: 0, y: 358}
+  m_AnchoredPosition: {x: 0, y: -275.96}
+  m_SizeDelta: {x: 0, y: 560}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1777739129
 MonoBehaviour:
@@ -6655,4 +6652,3 @@ SceneRoots:
   - {fileID: 1606428156}
   - {fileID: 1624099280}
   - {fileID: 1413886504}
-  - {fileID: 1523748360}
