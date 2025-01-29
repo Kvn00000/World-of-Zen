@@ -14,7 +14,8 @@ public class CanvasManager : MonoBehaviour
     public GameObject exteriorCanvas;
     public GameObject doorCanvas; 
     public GameObject paintCanvas;
-    public GameObject quad;
+    public GameObject PictureMenu;
+    public GameObject ExerciceCanvas;
 
     [Header("Transform Position")]
     public Transform insidePos;
@@ -112,7 +113,9 @@ public class CanvasManager : MonoBehaviour
             // Check if the player presses 'E' to change the scene
             if (Input.GetKeyDown(KeyCode.E) && paintCanvas.activeSelf)
             {
-                // quad.SetActive(true);
+
+                playerMovement.canMove = false;
+                PictureMenu.SetActive(true);
                 //Turn on the respiration game
                 paintCanvas.SetActive(false); // Hide the Canvas once the scene is changed
             }
@@ -153,6 +156,17 @@ public class CanvasManager : MonoBehaviour
     }
 
 
+    public void StartGame()
+    {
+        PictureMenu.SetActive(false);
+        ExerciceCanvas.SetActive(true);
+    }
+
+    public void CloseGame()
+    {
+        ExerciceCanvas.SetActive(false);
+        playerMovement.canMove = true;
+    }
 
 
 }

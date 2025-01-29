@@ -50,7 +50,7 @@ public class LireFichierTexte : MonoBehaviour
         start = Time.time;
         // Spécifiez le chemin du dossier contenant le fichier .txt
         // string dossier = "/Users/claire/Documents/OpenSignals (r)evolution/temp"; 
-        string dossier = "./Assets/test"; 
+        string dossier = "./Assets/Scripts"; // Dossier du projet Unity
         // Lire le seul fichier .txt dans ce dossier
         cheminFichier = TrouverFichierTexte(dossier);
     }
