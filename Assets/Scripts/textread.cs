@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;  
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEditor.ShaderKeywordFilter;
 using TMPro;
+using System;
 
 public class LireFichierTexte : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class LireFichierTexte : MonoBehaviour
 
 
     // BPM
-    private float BPMMinitTime = 60f;
+    private float BPMMinitTime = 20f;
     private bool bpm = false;
     private List<int> BPMvalues = new List<int>(3000);
 
@@ -113,7 +113,6 @@ public class LireFichierTexte : MonoBehaviour
         if (lignes.Length > 0)
         {
             string derniereLigne = lignes[lignes.Length - 1]; // Récupérer la dernière ligne
-
             // Analyser la ligne et extraire les valeurs des colonnes A1 et A2
             string[] valeurs = derniereLigne.Split('\t');
 
@@ -123,23 +122,50 @@ public class LireFichierTexte : MonoBehaviour
                 string bpmData = valeurs[5]; // Colonne A1 (Index 5)
                 string respiration = valeurs[6]; // Colonne A2 (Index 6)
                 
-                BPMvalues.Add(int.Parse(bpmData));
                 if(bpm){
-                    BPMvalues.RemoveAt(0);
-                    int maxValue = BPMvalues.Max();
-                    int count = BPMvalues.Count(n => n >= (maxValue - 50));
-                    bpmText = (count/60).ToString();
+                    var data = File.ReadLines(cheminFichier)
+                            .Where(line => !line.StartsWith("#")) // Ignore l'en-tête
+                            .ToList();
+
+                    // Sélectionner les 125 dernières lignes
+                    var dernieresLignes = data.Skip(Math.Max(0, data.Count - 125)).ToList();
+
+                    List<int> signalCardiaque = dernieresLignes
+                        .Select(line => line.Split('\t')) // Séparer les colonnes
+                        .Where(parts => parts.Length > 5) // Vérifier qu'on a bien assez de colonnes
+                        .Select(parts => int.Parse(parts[5])) // Récupérer la valeur de la colonne A1
+                        .ToList();
+
+                    // Détecter les pics du signal cardiaque
+                    int battements = 0;
+                    for (int i = 1; i < signalCardiaque.Count - 1; i++)
+                    {
+                        if (signalCardiaque[i] > signalCardiaque[i - 1] && signalCardiaque[i] > signalCardiaque[i + 1])
+                        {
+                            battements++; // Compter le pic
+                        }
+                    }
+
+                    // Calcul du BPM (fréquence cardiaque)
+                    int bpmvalue = battements * 3;
+                    Debug.Log("BPM : " + bpmvalue);
                 }
+                // BPMvalues.Add(int.Parse(bpmData));
+                // if(bpm){
+                //     BPMvalues.RemoveAt(0);
+                //     int maxValue = BPMvalues.Max();
+                //     int count = BPMvalues.Count(n => n >= (maxValue - 50));
+                //     bpmText = (count/60).ToString();
+                // }
 
                 //Respiration
-                int randomValue = Random.Range(0, 1001);
+                int randomValue = UnityEngine.Random.Range(0, 1001);
                 toPlot.Add(randomValue);
 
                 // toPlot.Add(int.Parse(valeurs[6]));
                 if(resp){
                     toPlot.RemoveAt(0);
                 }
-                Debug.Log(circles.Count);
 
                 // Afficher les valeurs dans la console
                 // Debug.Log("BPM (A1): " + bpm);
@@ -167,7 +193,7 @@ public class LireFichierTexte : MonoBehaviour
 
 
                 //Respiration
-                int randomValue = Random.Range(0, 1001);
+                int randomValue = UnityEngine.Random.Range(0, 1001);
                 toPlot.Add(randomValue);
 
                 // toPlot.Add(int.Parse(valeurs[6]));
