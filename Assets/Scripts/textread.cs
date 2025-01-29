@@ -120,6 +120,7 @@ public class LireFichierTexte : MonoBehaviour
 
             if (valeurs.Length < 11){
                 derniereLigne = lignes[lignes.Length - 2];
+                valeurs = derniereLigne.Split('\t');
             }
                 string respiration = valeurs[6]; // Colonne A2 (Index 6) => respiration
                 

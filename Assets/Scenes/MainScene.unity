@@ -3227,9 +3227,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 991928847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd3ea62f2c142c345a9c767b145c5d1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4094f329843e943d3a5b8defe98cfee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bpmInput: {fileID: 2141084028}
+  circleSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &1005618242
 GameObject:
   m_ObjectHideFlags: 0
@@ -3294,7 +3296,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1026304272
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6540,7 +6542,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -317, y: 252}
+  m_AnchoredPosition: {x: -253, y: 201}
   m_SizeDelta: {x: 272.9328, y: 44.9352}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2141084028
