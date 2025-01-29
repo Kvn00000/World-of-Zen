@@ -11,8 +11,9 @@ public class LireFichierTexte : MonoBehaviour
     private float start =0f;
     // Lecture de fichier texte
     private float derniereLecture = 0f;
-    private float intervalleLecture = 0.2f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
-
+    private float intervalleLecture = 0.01f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
+    private float deltaX = 1f;
+    private float xInit = 165f;
     // Respiration
     private float respirationInitTime = 3f;
     private bool resp = false;
@@ -48,6 +49,7 @@ public class LireFichierTexte : MonoBehaviour
     {
         start = Time.time;
         // Spécifiez le chemin du dossier contenant le fichier .txt
+        // string dossier = "/Users/claire/Documents/OpenSignals (r)evolution/temp"; 
         string dossier = "./Assets/test"; 
         // Lire le seul fichier .txt dans ce dossier
         cheminFichier = TrouverFichierTexte(dossier);
@@ -116,21 +118,20 @@ public class LireFichierTexte : MonoBehaviour
             // Analyser la ligne et extraire les valeurs des colonnes A1 et A2
             string[] valeurs = derniereLigne.Split('\t');
 
-            if (valeurs.Length >= 11)
-            {
-                // Extraire les valeurs de A1 et A2 (en indexant correctement)
-                string bpmData = valeurs[5]; // Colonne A1 (Index 5)
-                string respiration = valeurs[6]; // Colonne A2 (Index 6)
+            if (valeurs.Length < 11){
+                derniereLigne = lignes[lignes.Length - 2];
+            }
+                string respiration = valeurs[6]; // Colonne A2 (Index 6) => respiration
                 
                 if(bpm){
                     var data = File.ReadLines(cheminFichier)
                             .Where(line => !line.StartsWith("#")) // Ignore l'en-tête
                             .ToList();
 
-                    // Sélectionner les 125 dernières lignes
-                    var dernieresLignes = data.Skip(Math.Max(0, data.Count - 125)).ToList();
+                    // Sélectionner les 125*15 dernières lignes
+                    var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - (125*15))).ToList();
 
-                    List<int> signalCardiaque = dernieresLignes
+                    List<int> signalCardiaque = BPMdernieresLignes
                         .Select(line => line.Split('\t')) // Séparer les colonnes
                         .Where(parts => parts.Length > 5) // Vérifier qu'on a bien assez de colonnes
                         .Select(parts => int.Parse(parts[5])) // Récupérer la valeur de la colonne A1
@@ -140,23 +141,17 @@ public class LireFichierTexte : MonoBehaviour
                     int battements = 0;
                     for (int i = 1; i < signalCardiaque.Count - 1; i++)
                     {
-                        if (signalCardiaque[i] > signalCardiaque[i - 1] && signalCardiaque[i] > signalCardiaque[i + 1])
+                        if (signalCardiaque[i] >= signalCardiaque[i - 1] && signalCardiaque[i] > signalCardiaque[i + 1])
                         {
                             battements++; // Compter le pic
                         }
                     }
 
                     // Calcul du BPM (fréquence cardiaque)
-                    int bpmvalue = battements * 3;
-                    Debug.Log("BPM : " + bpmvalue);
+                    int bpmvalue = battements;
+                    bpmText = bpmvalue.ToString();
                 }
-                // BPMvalues.Add(int.Parse(bpmData));
-                // if(bpm){
-                //     BPMvalues.RemoveAt(0);
-                //     int maxValue = BPMvalues.Max();
-                //     int count = BPMvalues.Count(n => n >= (maxValue - 50));
-                //     bpmText = (count/60).ToString();
-                // }
+
 
                 //Respiration
                 int randomValue = UnityEngine.Random.Range(0, 1001);
@@ -170,44 +165,7 @@ public class LireFichierTexte : MonoBehaviour
                 // Afficher les valeurs dans la console
                 // Debug.Log("BPM (A1): " + bpm);
                 // Debug.Log("Respiration (A2): " + respiration);
-            }
-            else
-            {//Sinon récupérer l'avant derniere ligne
-                derniereLigne = lignes[lignes.Length - 2];
-
-                // Analyser la ligne et extraire les valeurs des colonnes A1 et A2
-                valeurs = derniereLigne.Split('\t');
-
-                // Extraire les valeurs de A1 et A2 (en indexant correctement)
-                string bpmData = valeurs[5]; // Colonne A1 (Index 5)
-                string respiration = valeurs[6]; // Colonne A2 (Index 6)
-
-
-                // BPMvalues.Add(int.Parse(bpmData));
-                if(bpm){
-                    BPMvalues.RemoveAt(0);
-                    int maxValue = BPMvalues.Max();
-                    int count = BPMvalues.Count(n => n >= (maxValue - 50));
-                    bpmText = (count/60).ToString();
-                }
-
-
-                //Respiration
-                int randomValue = UnityEngine.Random.Range(0, 1001);
-                toPlot.Add(randomValue);
-
-                // toPlot.Add(int.Parse(valeurs[6]));
-                if(resp){
-                    toPlot.RemoveAt(0);
-                    circles.RemoveAt(0);
-                }
-
-
-                // Afficher les valeurs dans la console
-                // Debug.Log("BPM (A1): " + bpm);
-                // Debug.Log("Respiration (A2): " + respiration);
-
-            }
+            
         }
         else
         {
@@ -234,6 +192,13 @@ public class LireFichierTexte : MonoBehaviour
         return gameObj;
     }
 
+    private void shiftPoints(List<GameObject> points){
+        for(int i = 0; i < points.Count; i++){
+            points[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(points[i].GetComponent<RectTransform>().anchoredPosition.x - deltaX, points[i].GetComponent<RectTransform>().anchoredPosition.y);
+        }
+    }
+
+
     private void ShowGraph(List<int> valueList){
         float graphHeight = graphContainer.sizeDelta.y;
         float yMaximum = 1000f;
@@ -248,19 +213,64 @@ public class LireFichierTexte : MonoBehaviour
         }
         circles.Clear();
 
+        // shiftPoints(circles);
+
+
         GameObject lastCircleGameObject = null;
         for(int i = 0; i < valueList.Count; i++){
-            float xPosition = (i+1)*0.55f ;
-            float yPosition = (valueList[i] / yMaximum) * graphHeight;
-            GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
-            if(lastCircleGameObject != null){
-                CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
-            }
-            lastCircleGameObject = cGO;
+            
+                float xPosition = (i+1)*deltaX ;
+                float yPosition = (valueList[i] / yMaximum) * graphHeight;
+                GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
+                if(lastCircleGameObject != null){
+                    CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
+                }
+                lastCircleGameObject = cGO;
+            
 
         }
     }
 
+
+    private void ShowGraph2(int value){
+        float graphHeight = graphContainer.sizeDelta.y;
+        float yMaximum = 1000f;
+
+        // for(int i = 0; i < lines.Count; i++){
+        //     Destroy(lines[i]);
+        // }
+        // lines.Clear();
+
+        // for(int i = 0; i < circles.Count; i++){
+        //     Destroy(circles[i]);
+        // }
+        // circles.Clear();
+        if(circles.Count > 15){
+            GameObject toDestroy = circles[0];
+            circles.RemoveAt(0);
+            Destroy(toDestroy);
+        }
+        shiftPoints(circles);
+
+
+        if(circles.Count == 0){
+            float xPosition = xInit;
+            float yPosition = (value / yMaximum) * graphHeight;
+            GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
+        }else{
+
+            GameObject lastCircleGameObject = circles[circles.Count - 1];
+
+
+            float xPosition = lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition.x + deltaX;
+            float yPosition = (value / yMaximum) * graphHeight;
+            GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
+
+            CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
+        }
+
+        
+    }
 
     private void CreateDotConnection(Vector2 dotPosA, Vector2 dotPosB){
         GameObject gameObj = new GameObject("dotConnection", typeof(Image));
@@ -272,7 +282,7 @@ public class LireFichierTexte : MonoBehaviour
         float distance = Vector2.Distance(dotPosA, dotPosB);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
-        rectTransform.sizeDelta = new Vector2(distance, 3f);
+        rectTransform.sizeDelta = new Vector2(distance, 1f);
         rectTransform.anchoredPosition = dotPosA + dir * distance * 0.5f;
         rectTransform.localEulerAngles = new Vector3(0, 0, GetAngleFromVectorFloat(dir));
     }
