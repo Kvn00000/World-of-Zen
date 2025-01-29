@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class BitalinoScript : MonoBehaviour
 {
@@ -32,6 +33,35 @@ public class BitalinoScript : MonoBehaviour
     private bool isConnectionDone = false;
     private bool isConnecting = false;
     private bool isAcquisitionStarted = false;
+
+
+    private float start =0f;
+    // Lecture de fichier texte
+    private float derniereLecture = 0f;
+    private float intervalleLecture = 0.001f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
+
+    // Respiration
+    private float respirationInitTime = 3f;
+    private bool resp = false;
+
+
+
+    string filePath = "./data.csv";
+
+    List<int> toPlot = new List<int>();
+    private List<GameObject> circles;
+    private List<GameObject> lines;
+
+
+
+    private float BPMMinitTime = 60f;
+    private bool bpm = false;
+    private List<int> BPMvalues = new List<int>(3000);
+
+    public TextMeshProUGUI bpmInput; 
+    private string bpmText;
+
+
 
 
     // Start is called before the first frame update
@@ -135,6 +165,7 @@ public class BitalinoScript : MonoBehaviour
             isConnectionDone = true;
             isConnecting = false;
             Debug.Log("Connexion réussie à l'appareil BITalino");
+
         }
         else
         {
@@ -152,6 +183,8 @@ public class BitalinoScript : MonoBehaviour
         {
             isAcquisitionStarted = true;
             Debug.Log("Acquisition démarrée avec succès");
+
+            start = Time.time;
         }
         else
         {
@@ -182,11 +215,35 @@ public class BitalinoScript : MonoBehaviour
             string outputString = "Acquired Data:\n";
             for (int j = 0; j < data.Length; j++)
             {
-                outputString += data[j] + "\t";
+                outputString += data[j] + ",";
             }
 
-            // Show the values in the GUI.
-            Debug.Log(outputString);
+
+            toPlot.Add(data[0]);
+            if(resp){
+                toPlot.RemoveAt(0);
+            }
+            Debug.Log(circles.Count);
+
+
+            if (Time.time - start > respirationInitTime){
+                resp = true;
+            }
+
+            if(Time.time - start > BPMMinitTime){
+                bpm = true;
+            }
+
+            if(toPlot.Count > 0){
+                ShowGraph(toPlot);
+            }
+
+
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine(outputString);
+            } 
         }
     }
 
@@ -207,5 +264,74 @@ public class BitalinoScript : MonoBehaviour
             // PluxDeviceManager.PluxDigInUpdateEvent digInEvent = (pluxEvent as PluxDeviceManager.PluxDigInUpdateEvent);
             // Debug.Log("Digital Input Update Event Detected on channel " + digInEvent.channel + ". Current state: " + digInEvent.state);
         }
+    }
+
+    [SerializeField] private Sprite circleSprite;
+    private RectTransform graphContainer;
+
+
+        private GameObject CreateCircle(Vector2 anchoredPosition){
+        GameObject gameObj = new GameObject("circle", typeof(Image));
+        circles.Add(gameObj);
+        gameObj.transform.SetParent(graphContainer, false);
+        gameObj.GetComponent<Image>().sprite = circleSprite;
+        RectTransform rectTransform = gameObj.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = anchoredPosition;
+        rectTransform.sizeDelta = new Vector2(2, 2);
+        rectTransform.anchorMin = new Vector2(0, 0);
+        rectTransform.anchorMax = new Vector2(0, 0);
+        return gameObj;
+    }
+
+    private void ShowGraph(List<int> valueList){
+        float graphHeight = graphContainer.sizeDelta.y;
+        float yMaximum = 1000f;
+
+        for(int i = 0; i < lines.Count; i++){
+            Destroy(lines[i]);
+        }
+        lines.Clear();
+
+        for(int i = 0; i < circles.Count; i++){
+            Destroy(circles[i]);
+        }
+        circles.Clear();
+
+        GameObject lastCircleGameObject = null;
+        for(int i = 0; i < valueList.Count; i++){
+            float xPosition = (i+1)*11f ;
+            float yPosition = (valueList[i] / yMaximum) * graphHeight;
+            GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
+            if(lastCircleGameObject != null){
+                CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
+            }
+            lastCircleGameObject = cGO;
+
+        }
+    }
+
+
+    private void CreateDotConnection(Vector2 dotPosA, Vector2 dotPosB){
+        GameObject gameObj = new GameObject("dotConnection", typeof(Image));
+        lines.Add(gameObj);
+        gameObj.transform.SetParent(graphContainer, false);
+        gameObj.GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+        RectTransform rectTransform = gameObj.GetComponent<RectTransform>();
+        Vector2 dir = (dotPosB - dotPosA).normalized;
+        float distance = Vector2.Distance(dotPosA, dotPosB);
+        rectTransform.anchorMin = new Vector2(0, 0);
+        rectTransform.anchorMax = new Vector2(0, 0);
+        rectTransform.sizeDelta = new Vector2(distance, 3f);
+        rectTransform.anchoredPosition = dotPosA + dir * distance * 0.5f;
+        rectTransform.localEulerAngles = new Vector3(0, 0, GetAngleFromVectorFloat(dir));
+    }
+
+    private float GetAngleFromVectorFloat(Vector2 dir){
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if(n < 0){
+            n += 360;
+        }
+        return n;
     }
 }
