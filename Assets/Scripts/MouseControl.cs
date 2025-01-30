@@ -12,8 +12,8 @@ public class MouseControl : MonoBehaviour
     private float yRotation;
 
     private void Start(){
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = true;
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = true;
     }
 
 
