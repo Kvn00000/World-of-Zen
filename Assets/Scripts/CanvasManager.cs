@@ -242,13 +242,32 @@ public void StartBreathingGame()
     breathingProcess = new Process();
     breathingProcess.StartInfo.FileName = pythonExecutable;
     breathingProcess.StartInfo.Arguments = $"\"{scriptPath}\"";
-    breathingProcess.StartInfo.RedirectStandardOutput = true;
+    breathingProcess.StartInfo.RedirectStandardOutput = true; // 读取 Python 输出
+    breathingProcess.StartInfo.RedirectStandardError = true;  // 读取 Python 错误
     breathingProcess.StartInfo.UseShellExecute = false;
     breathingProcess.StartInfo.CreateNoWindow = true;
+
+    // **捕获 Python 日志并在 Unity 显示**
+    breathingProcess.OutputDataReceived += (sender, args) =>
+    {
+        if (!string.IsNullOrEmpty(args.Data))
+        {
+            UnityEngine.Debug.Log($"🐍 [Python]: {args.Data}");
+        }
+    };
+    breathingProcess.ErrorDataReceived += (sender, args) =>
+    {
+        if (!string.IsNullOrEmpty(args.Data))
+        {
+            UnityEngine.Debug.LogError($"🐍❌ [Python Error]: {args.Data}");
+        }
+    };
 
     try
     {
         breathingProcess.Start();
+        breathingProcess.BeginOutputReadLine(); // 开始异步读取标准输出
+        breathingProcess.BeginErrorReadLine();  // 开始异步读取错误输出
     }
     catch (System.Exception e)
     {
@@ -258,6 +277,7 @@ public void StartBreathingGame()
 
     StartCoroutine(MonitorBreathingResults());
 }
+
 
 
     private IEnumerator MonitorBreathingResults()

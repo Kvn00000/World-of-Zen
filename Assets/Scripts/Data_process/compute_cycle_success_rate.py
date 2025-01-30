@@ -72,9 +72,6 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
 
     while True:
         time.sleep(1)  # 每秒检查一次文件
-        if not os.path.exists(output_file):
-            with open(output_file, "w") as f:
-                f.write("number\tcycle\tlong\ttype\tsuccessrate\n")
 
         # 检查文件是否有更新
         new_mod_time = os.path.getmtime(file_path)
