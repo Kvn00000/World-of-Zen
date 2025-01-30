@@ -48,7 +48,7 @@ def get_last_number(output_file):
     except Exception:
         return 1  # 读取失败时，从 1 开始
 
-def monitor_and_evaluate(file_path, phases, output_file, timeout=5):
+def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
     """
     监听数据文件，并按阶段计算 success rate，每个阶段结束后切换到下一个。
     """

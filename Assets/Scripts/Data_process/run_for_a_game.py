@@ -31,7 +31,7 @@ def clean_folder(folder_path):
         print(f"📁 目录不存在，已创建 {folder_path}！")
 
 # **执行清理**
-clean_folder(ORIGINAL_DATA_FOLDER if not TEST_MODE else MOCK_DATA_FOLDER)  # 选择清空 OpenSignals 数据文件夹 或 Mock 数据文件夹
+# clean_folder(ORIGINAL_DATA_FOLDER if not TEST_MODE else MOCK_DATA_FOLDER)  # 选择清空 OpenSignals 数据文件夹 或 Mock 数据文件夹
 clean_folder(TRANSFORMED_DATA_FOLDER)  # 清空转换后数据文件夹
 
 # **如果在测试模式下，启动 mock_data_load.py**
