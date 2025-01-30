@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class CanvasManager : MonoBehaviour
 {
@@ -37,6 +39,9 @@ public class CanvasManager : MonoBehaviour
     private bool firstTime = true;
     private bool inside = false;
 
+    public Slider pictureSlider;
+    public TextMeshProUGUI sliderValue;
+
 
 
     void Start()
@@ -45,6 +50,12 @@ public class CanvasManager : MonoBehaviour
         exteriorCanvas.SetActive(true);
         playerMovement = GetComponent<PlayerMovement>();
         playerMovement.canMove = false;
+        pictureSlider.onValueChanged.AddListener(UpdateSliderValue);
+    }
+
+    void UpdateSliderValue(float value)
+    {
+        sliderValue.text = value.ToString("0");
     }
 
     void Update()
