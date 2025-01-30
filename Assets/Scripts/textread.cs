@@ -35,10 +35,10 @@ public class LireFichierTexte : MonoBehaviour
 
     private void Awake()
     {
-        circles = new List<GameObject>(3000);
-        lines = new List<GameObject>(3000);
+        // circles = new List<GameObject>(3000);
+        // lines = new List<GameObject>(3000);
         
-        graphContainer = transform.Find("Container").GetComponent<RectTransform>();
+        // graphContainer = transform.Find("Container").GetComponent<RectTransform>();
         // for (int i = 0; i < 15; i++)
         // {
         //     xAxis.Add((i+1)*11);
@@ -47,36 +47,36 @@ public class LireFichierTexte : MonoBehaviour
 
     void Start()
     {
-        start = Time.time;
-        // Spécifiez le chemin du dossier contenant le fichier .txt
-        // string dossier = "/Users/claire/Documents/OpenSignals (r)evolution/temp"; 
-        string dossier = "./Assets/Scripts"; // Dossier du projet Unity
-        // Lire le seul fichier .txt dans ce dossier
-        cheminFichier = TrouverFichierTexte(dossier);
+        // start = Time.time;
+        // // Spécifiez le chemin du dossier contenant le fichier .txt
+        // // string dossier = "/Users/claire/Documents/OpenSignals (r)evolution/temp"; 
+        // string dossier = "./Assets/Scripts"; // Dossier du projet Unity
+        // // Lire le seul fichier .txt dans ce dossier
+        // cheminFichier = TrouverFichierTexte(dossier);
     }
 
     void Update()
     {
-        if (Time.time - derniereLecture > intervalleLecture)
-        {
-            derniereLecture = Time.time;
-            LireDerniereLigne(cheminFichier);
-            if(bpm){
-                bpmInput.text = bpmText;
-            }
-        }
+        // if (Time.time - derniereLecture > intervalleLecture)
+        // {
+        //     derniereLecture = Time.time;
+        //     LireDerniereLigne(cheminFichier);
+        //     if(bpm){
+        //         bpmInput.text = bpmText;
+        //     }
+        // }
 
-        if (Time.time - start > respirationInitTime){
-            resp = true;
-        }
+        // if (Time.time - start > respirationInitTime){
+        //     resp = true;
+        // }
 
-        if(Time.time - start > BPMMinitTime){
-            bpm = true;
-        }
+        // if(Time.time - start > BPMMinitTime){
+        //     bpm = true;
+        // }
 
-        if(toPlot.Count > 0){
-                ShowGraph(toPlot);
-        }
+        // if(toPlot.Count > 0){
+        //         ShowGraph(toPlot);
+        // }
 
     }
 

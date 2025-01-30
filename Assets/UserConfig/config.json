@@ -1,0 +1,7 @@
+{
+  "python_path": "python3",
+  "opensignal_data_folder": "",
+  "mock_opensignal_data_folder": "Assets/Data/original",
+  "transformed_data_folder": "Assets/Data/transformed",
+  "test_mode": true
+}
