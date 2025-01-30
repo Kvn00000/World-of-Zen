@@ -11,7 +11,7 @@ public class LireFichierTexte : MonoBehaviour
     private float start =0f;
     // Lecture de fichier texte
     private float derniereLecture = 0f;
-    private float intervalleLecture = 0.01f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
+    private float intervalleLecture = 0.2f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
     private float deltaX = 1f;
     private float xInit = 165f;
     // Respiration
@@ -78,7 +78,6 @@ public class LireFichierTexte : MonoBehaviour
                 ShowGraph(toPlot);
         }
 
-
     }
 
 
@@ -130,7 +129,7 @@ public class LireFichierTexte : MonoBehaviour
                             .ToList();
 
                     // Sélectionner les 125*15 dernières lignes
-                    var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - (125*15))).ToList();
+                    var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - (125*16))).ToList();
 
                     List<int> signalCardiaque = BPMdernieresLignes
                         .Select(line => line.Split('\t')) // Séparer les colonnes
