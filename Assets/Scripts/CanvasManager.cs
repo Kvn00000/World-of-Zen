@@ -327,15 +327,27 @@ public void StartBreathingGame()
     }
 }
 
-
-
+private void StopBreathingProcess()
+    {
+        if (breathingProcess != null && !breathingProcess.HasExited)
+        {
+            UnityEngine.Debug.Log("🛑 Stopping Python script...");
+            breathingProcess.Kill();
+            breathingProcess.Dispose();
+        }
+    }
 
     public void CloseGame()
     {
         ExerciceCanvas.SetActive(false);
         playerMovement.canMove = true;
+        StopBreathingProcess();
     }
 
+private void OnApplicationQuit()
+    {
+        StopBreathingProcess();
+    }
 [System.Serializable]  // 必须加这个，否则 JsonUtility 无法解析
     private class ConfigData
     {
