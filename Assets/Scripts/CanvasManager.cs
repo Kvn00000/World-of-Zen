@@ -23,7 +23,6 @@ public class CanvasManager : MonoBehaviour
     public GameObject PictureMenu;
     public GameObject ExerciceCanvas;
 
-    public GameObject ResultsCanvas;  // 结果展示界面
 
     [Header("Transform Position")]
     public Transform insidePos;
@@ -51,7 +50,7 @@ public class CanvasManager : MonoBehaviour
 
     
     private string configPath = "Assets/UserConfig/config.json"; // JSON 配置文件路径
-    public string pythonPath; // 存储 Python 解释器路径
+    private string pythonPath; // 存储 Python 解释器路径
 
     private string resultsFilePath = "Assets/Data/transformed/breathing_success_rates.txt";
     public TextMeshProUGUI resultsText;
