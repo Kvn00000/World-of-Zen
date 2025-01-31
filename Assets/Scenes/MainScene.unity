@@ -1969,6 +1969,7 @@ MonoBehaviour:
   pointerDistance: 5
   pictureSlider: {fileID: 619662506}
   sliderValue: {fileID: 1410302932}
+  NiveauEstime: {fileID: 1694345456}
   resultsText: {fileID: 1031768614}
   calibrationResultsText: {fileID: 1348896071}
   exerciceStep: {fileID: 513221191}
@@ -4165,7 +4166,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 991928847}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3fe9c059d7325642938235e2845ece2, type: 3}
   m_Name: 
@@ -5087,6 +5088,7 @@ MonoBehaviour:
   pointerDistance: 3
   pictureSlider: {fileID: 0}
   sliderValue: {fileID: 0}
+  NiveauEstime: {fileID: 0}
   resultsText: {fileID: 0}
   calibrationResultsText: {fileID: 0}
   exerciceStep: {fileID: 0}
@@ -6910,7 +6912,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1745791333
 RectTransform:
   m_ObjectHideFlags: 0
