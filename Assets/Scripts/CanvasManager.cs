@@ -12,18 +12,18 @@ using System;
 public class CanvasManager : MonoBehaviour
 {
     List<float> devoilementRates = new List<float>
-        {
-            0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-            0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f,
-            0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f,
-            0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f,
-            0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f,
-            0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f,
-            0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f,
-            0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f,
-            0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f,
-            0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f
-        };
+    {
+        0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f,
+        0.75f, 0.75f, 0.75f, 0.75f, 0.75f, 0.75f, 0.75f, 0.75f, 0.75f, 0.75f,
+        0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0.7f, 0.7f,
+        0.65f, 0.65f, 0.65f, 0.65f, 0.65f, 0.65f, 0.65f, 0.65f, 0.65f, 0.65f,
+        0.6f, 0.6f, 0.6f, 0.6f, 0.6f, 0.6f, 0.6f, 0.6f, 0.6f, 0.6f,
+        0.55f, 0.55f, 0.55f, 0.55f, 0.55f, 0.55f, 0.55f, 0.55f, 0.55f, 0.55f,
+        0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
+        0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f,
+        0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f,
+        0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f
+    };
     
         List<float> revertRates = new List<float>
         {
@@ -257,7 +257,8 @@ public class CanvasManager : MonoBehaviour
     
     public void AdjustOpacity()
 {
-    float devoilement_rate_to_use = devoilement_rate_tableau;
+    float devoilement_rate_to_use = devoilementRate;
+    UnityEngine.Debug.Log("Initial devoilementRate: " + devoilementRate);
     if (devoilement_rate_tableau < 25)
     {
         quantile = 1;
@@ -277,34 +278,55 @@ public class CanvasManager : MonoBehaviour
         quantile = 4;
         devoilement_rate_to_use = Math.Max(0.05f, devoilementRate - 0.10f);
     }
-    if (respSuccessRate > 50){
+    
+    UnityEngine.Debug.Log("Quantile set to: " + quantile);
+    UnityEngine.Debug.Log("Devoilement rate to use: " + devoilement_rate_to_use);
+    
+    if (respSuccessRate > 50)
+    {
         float percentage_to_devoile = (respSuccessRate - 50) * 2 * 0.01f;
         float rate_to_devoile = percentage_to_devoile * devoilement_rate_to_use;
         devoilement_rate_tableau += rate_to_devoile;
-        // 每次增加 1%
+        
+        UnityEngine.Debug.Log("Response success rate > 50, increasing devoilement_rate_tableau by: " + rate_to_devoile);
+        UnityEngine.Debug.Log("Updated devoilement_rate_tableau: " + devoilement_rate_tableau);
+        
         accumulated_success_cycle += 1;
-        if (accumulated_success_cycle == 3){
+        UnityEngine.Debug.Log("Accumulated success cycle: " + accumulated_success_cycle);
+        
+        if (accumulated_success_cycle == 3)
+        {
             acceleration_mode = true;
-            devoilementRate = Math.Min(1, devoilementRate*2);
+            devoilementRate = Math.Min(1, devoilementRate * 2);
+            UnityEngine.Debug.Log("Acceleration mode activated! devoilementRate doubled: " + devoilementRate);
+            
             GameObject panel = ExerciceCanvas.transform.Find("Panel").gameObject;
             Image panelImage = panel.GetComponent<Image>();
             panelImage.color = new Color(1f, 0.84f, 0f, 1f);
+            UnityEngine.Debug.Log("Panel color changed to yellow");
         }
     }
-    else{
-        float percentage_to_revert = 50 - respSuccessRate * 2 * 0.01f;
+    else
+    {
+        float percentage_to_revert = (50 - respSuccessRate) * 2 * 0.01f;
         float rate_to_revert = percentage_to_revert * revertRate;
         devoilement_rate_tableau = Math.Max(0, devoilement_rate_tableau - rate_to_revert);
-        // 每次增加 1%
+        
+        UnityEngine.Debug.Log("Response success rate <= 50, decreasing devoilement_rate_tableau by: " + rate_to_revert);
+        UnityEngine.Debug.Log("Updated devoilement_rate_tableau: " + devoilement_rate_tableau);
+        
         accumulated_success_cycle = 0;
         acceleration_mode = false;
         devoilementRate = devoilementRates[difficulte];
+        UnityEngine.Debug.Log("Acceleration mode deactivated. Resetting devoilementRate to difficulty setting: " + devoilementRate);
+        
         GameObject panel = ExerciceCanvas.transform.Find("Panel").gameObject;
         Image panelImage = panel.GetComponent<Image>();
         panelImage.color = new Color(1f, 1f, 1f, 1f);
+        UnityEngine.Debug.Log("Panel color reset to white");
     }
     
-
+    UnityEngine.Debug.Log("Setting opacity to: " + devoilement_rate_tableau);
     setOpacity(devoilement_rate_tableau);
 }
 
