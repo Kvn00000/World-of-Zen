@@ -6,12 +6,3 @@ New Event raised: 3
 Digital input event - Clock source: 2  Clock value: 0  New input state: 0
 New Event raised: 3
 Digital input event - Clock source: 2  Clock value: 0  New input state: 0
-
-[main 2025-01-31T19:27:06.641Z] update#setState idle
-
-[main 2025-01-31T19:27:36.658Z] update#setState checking for updates
-[main 2025-01-31T19:27:36.682Z] update#setState idle
-Total cache size 53540776
-Total cache size after purge 53540776
-Total cache size 53540776
-Total cache size after purge 53540776

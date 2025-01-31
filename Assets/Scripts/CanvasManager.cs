@@ -442,17 +442,20 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
             isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
+                UnityEngine.Debug.Log("Expirez pendant 8 s");
                 exerciceStepText = $"Expirez pendant 8 s";
                 huit_s.Play();
             }
 
             else if(duration == "4"){
+                UnityEngine.Debug.Log("Tenez votre respiration pendant 7 s");
                 exerciceStepText = $"Tenez votre respiration pendant 7 s";
                 sept_s.Play();
             }
             
-            else if(duration == "8" && inGame) 
+            else //if(duration == "8" && inGame) 
             {
+                UnityEngine.Debug.Log("Inspirez pendant 4 s");
                 exerciceStepText = $"Inspirez pendant 4 s";
                 quatre_s.Play();
             }
@@ -575,6 +578,7 @@ private void StopBreathingProcess()
     public void CloseGame()
     {
         ExerciceCanvas.SetActive(false);
+        exerciceMusic.Stop();
         playerMovement.canMove = true;
     }
 
