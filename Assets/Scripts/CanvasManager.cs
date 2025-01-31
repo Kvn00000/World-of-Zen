@@ -119,6 +119,11 @@ public class CanvasManager : MonoBehaviour
     private bool play_7_s = false;
     private bool play_8_s = false;
 
+    private int time_value = 0;
+
+    public TextMeshProUGUI accelerationModeText;
+    public TextMeshProUGUI devoilementText;
+
     void Start()
     {
         // Afficher le Canvas et désactiver le mouvement du joueur au début
@@ -273,7 +278,7 @@ public class CanvasManager : MonoBehaviour
             play_8_s = false;
         }
 
-
+        devoilementText.text = $"Le taux de dévoilement actuel : {devoilementRate}";
     }
     
     public void AdjustOpacity()
@@ -315,12 +320,14 @@ public class CanvasManager : MonoBehaviour
         accumulated_success_cycle += 1;
         UnityEngine.Debug.Log("Accumulated success cycle: " + accumulated_success_cycle);
         
-        if (accumulated_success_cycle == 2) // 3
+        if (accumulated_success_cycle == 1) // 3
         {
             acceleration_mode = true;
             devoilementRate = Math.Min(1, devoilementRate * 2);
             UnityEngine.Debug.Log("Acceleration mode activated! devoilementRate doubled: " + devoilementRate);
-            
+
+            // Ajout d'un text permettant de voir qu'on est en mode accelerate
+            accelerationModeText.text = "Acceleration mode activé, le dévoilement est doublé ! Continuez comme ça !";
             GameObject panel = ExerciceCanvas.transform.Find("Panel").gameObject;
             Image panelImage = panel.GetComponent<Image>();
             panelImage.color = new Color(1f, 0.84f, 0f, 1f);
@@ -338,6 +345,7 @@ public class CanvasManager : MonoBehaviour
         
         accumulated_success_cycle = 0;
         acceleration_mode = false;
+        accelerationModeText.text = "";
         devoilementRate = devoilementRates[difficulte];
         UnityEngine.Debug.Log("Acceleration mode deactivated. Resetting devoilementRate to difficulty setting: " + devoilementRate);
         
@@ -485,18 +493,21 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
             isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
-                exerciceStepText = $"Expirez pendant 8 s";
+                time_value = 8;
+                exerciceStepText = $"Expirez pendant {time_value} s";
                 play_8_s = true;
             }
 
             else if(duration == "4"){
-                exerciceStepText = $"Tenez votre respiration pendant 7 s";
+                time_value = 7;
+                exerciceStepText = $"Tenez votre respiration pendant {time_value} s";
                 play_7_s = true;
             }
             
             else if(duration == "8" && inGame) 
             {
-                exerciceStepText = $"Inspirez pendant 4 s";
+                time_value = 4;
+                exerciceStepText = $"Inspirez pendant {4} s";
                 play_4_s = true;
             }
         }
@@ -525,7 +536,7 @@ public void StartBreathingGame()
     LoadConfig(); // 确保在启动前加载配置
 
     ExerciceCanvas.SetActive(true);
-    resultsText.text = "Test de respiration en cours...";
+    resultsText.text = "Connexion des capteurs en cours...";
 
     if (!File.Exists(resultsFilePath))
     {

@@ -1,14 +1,5 @@
 number	cycle	long	type	successrate
-0	1	4	inspire	46.15
+0	1	4	inspire	35.9
 1	1	7	no	100.0
-2	1	8	expire	37.97
-3	2	4	inspire	38.46
-4	2	7	no	100.0
-5	2	8	expire	40.0
-6	3	4	inspire	33.33
-7	3	7	no	100.0
-8	3	8	expire	44.3
-9	4	4	inspire	46.15
-10	4	7	no	100.0
-11	4	8	expire	41.77
-12	5	4	inspire	38.46
+2	1	8	expire	41.77
+3	2	4	inspire	33.33
