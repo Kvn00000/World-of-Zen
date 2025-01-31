@@ -4,12 +4,44 @@ using TMPro;
 using System.IO;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
+using System;
 
 
 public class CanvasManager : MonoBehaviour
 {
+    List<float> devoilementRates = new List<float>
+        {
+            0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
+            0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f, 0.45f,
+            0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f,
+            0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f,
+            0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f, 0.3f,
+            0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f,
+            0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f,
+            0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f,
+            0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f,
+            0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f
+        };
+    
+        List<float> revertRates = new List<float>
+        {
+            0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f,
+            0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f,
+            0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f,
+            0.01f, 0.01f, 0.02f, 0.02f, 0.03f, 0.03f, 0.03f, 0.04f, 0.04f, 0.05f,
+            0.05f, 0.06f, 0.06f, 0.06f, 0.07f, 0.07f, 0.08f, 0.08f, 0.08f, 0.09f,
+            0.09f, 0.10f, 0.10f, 0.11f, 0.11f, 0.11f, 0.12f, 0.12f, 0.13f, 0.13f,
+            0.13f, 0.14f, 0.14f, 0.15f, 0.15f, 0.15f, 0.16f, 0.16f, 0.17f, 0.17f,
+            0.18f, 0.18f, 0.18f, 0.19f, 0.19f, 0.20f, 0.20f, 0.20f, 0.21f, 0.21f,
+            0.22f, 0.22f, 0.23f, 0.23f, 0.23f, 0.24f, 0.24f, 0.25f, 0.25f, 0.25f,
+            0.26f, 0.26f, 0.27f, 0.27f, 0.28f, 0.28f, 0.28f, 0.29f, 0.29f, 0.30f,
+            0.30f
+        };
 
-
+    
+    private float accelerationRate;
 
     [Header("Layers")]
     public LayerMask doorLayer;
@@ -72,6 +104,11 @@ public class CanvasManager : MonoBehaviour
     private bool inGame = false;
     private int lastNumber = 0; // 记录上一次的 number 值
 
+    private float devoilementRate;
+    private float revertRate;
+
+    private float respSuccessRate = 0;
+
     public AudioSource exerciceMusic;
 
     public AudioSource quatre_s;
@@ -101,6 +138,17 @@ public class CanvasManager : MonoBehaviour
             UnityEngine.Debug.LogError("配置文件 " + configPath + " 不存在，请检查！");
         }
     }
+
+    void ChangeDifficulte()
+{
+    devoilementRate = devoilementRates[difficulte];
+    revertRate = revertRates[difficulte];
+    
+    UnityEngine.Debug.Log($" 更新难度到 {difficulte}，新的 acceleration_rate: {accelerationRate}");
+    UnityEngine.Debug.Log($" 新的 devoilementRate: {devoilementRate}");
+    UnityEngine.Debug.Log($" 新的 revertRate: {revertRate}");
+}
+
 
     void UpdateSliderValue(float value)
     {
@@ -214,12 +262,21 @@ public class CanvasManager : MonoBehaviour
     
     public void AdjustOpacity()
 {
-    devoilement_rate_tableau += 0.5f; // 每次增加 1%
+    if (respSuccessRate > 50){
+        float percentage_to_devoile = (respSuccessRate - 50) * 2 * 0.01f;
+        float rate_to_devoile = percentage_to_devoile * devoilementRate;
+        devoilement_rate_tableau += rate_to_devoile;
+    }
+    else{
+        float percentage_to_revert = 50 - respSuccessRate * 2 * 0.01f;
+        float rate_to_revert = percentage_to_revert * revertRate;
+        devoilement_rate_tableau = Math.Max(0, devoilement_rate_tableau - rate_to_revert);
+    }
+
+     // 每次增加 1%
+    
     setOpacity(devoilement_rate_tableau);
 }
-
-
-
 
     public void CloseCanvas(GameObject canv)
     {
@@ -248,6 +305,7 @@ public void StartGame()
         PictureMenu.SetActive(false);
         ExerciceCanvas.SetActive(true);
         setOpacity(0);
+        ChangeDifficulte();
         StartFileWatcher();
         StartBreathingGame();
 
@@ -347,6 +405,8 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             string duration = resultData[2];
             string type = resultData[3];
             string successRate = resultData[4];
+            respSuccessRate = float.Parse(successRate);
+
 
             UnityEngine.Debug.Log($"New data detected! Number: {newNumber}, Duration: {duration}, Type: {type}, SuccessRate: {successRate}%");
 
