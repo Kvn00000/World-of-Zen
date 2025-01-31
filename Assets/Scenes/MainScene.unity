@@ -3500,9 +3500,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 991928847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4094f329843e943d3a5b8defe98cfee6, type: 3}
+  m_Script: {fileID: 11500000, guid: f3fe9c059d7325642938235e2845ece2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceMacAddress: BTH20:19:07:00:80:B3
+  samplingRate: 10
+  resolution: 10
   bpmInput: {fileID: 2141084028}
   circleSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &1005618242

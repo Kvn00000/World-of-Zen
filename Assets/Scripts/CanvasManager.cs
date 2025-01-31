@@ -198,7 +198,7 @@ public void StartGame()
     {
         PictureMenu.SetActive(false);
         ExerciceCanvas.SetActive(true);
-        StartBreathingGame();
+        //StartBreathingGame();
     }
 
 public void StartBreathingGame()
