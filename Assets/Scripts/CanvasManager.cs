@@ -451,7 +451,8 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
                 sept_s.Play();
             }
             
-            else if(duration == "8" && inGame) {
+            else if(duration == "8" && inGame) 
+            {
                 exerciceStepText = $"Inspirez pendant 4 s";
                 quatre_s.Play();
             }
