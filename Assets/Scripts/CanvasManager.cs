@@ -39,7 +39,6 @@ public class CanvasManager : MonoBehaviour
             0.26f, 0.26f, 0.27f, 0.27f, 0.28f, 0.28f, 0.28f, 0.29f, 0.29f, 0.30f,
             0.30f
         };
-
     
     private float accelerationRate;
 
@@ -97,18 +96,19 @@ public class CanvasManager : MonoBehaviour
 
     private string exerciceStepText;
 
-    private int difficulte = 0;
+    private int difficulte = 40;
 
     private float devoilement_rate_tableau = 0;
 
     private bool inGame = false;
     private int lastNumber = 0; // 记录上一次的 number 值
-
     private float devoilementRate;
     private float revertRate;
-
     private float respSuccessRate = 0;
+    private bool acceleration_mode = false;
+    private int accumulated_success_cycle = 0;
 
+    private int quantile = 0;
     public AudioSource exerciceMusic;
 
     public AudioSource quatre_s;
@@ -243,10 +243,6 @@ public class CanvasManager : MonoBehaviour
                 //Turn on the respiration game
                 paintCanvas.SetActive(false); // Hide the Canvas once the scene is changed
             }
-
-            // if(quad.activeSelf &&Input.GetKeyDown(KeyCode.Return)){
-            //     quad.SetActive(false);
-            // }
         }
         else
         {
@@ -262,19 +258,55 @@ public class CanvasManager : MonoBehaviour
     
     public void AdjustOpacity()
 {
+    respSuccessRate = 70;
+    float devoilement_rate_to_use = devoilement_rate_tableau;
+    if (devoilement_rate_tableau < 25)
+    {
+        quantile = 1;
+    }
+    else if (devoilement_rate_tableau < 50)
+    {
+        quantile = 2;
+        devoilement_rate_to_use = Math.Max(0.05f, devoilementRate - 0.02f);
+    }
+    else if (devoilement_rate_tableau < 75)
+    {
+        quantile = 3;
+        devoilement_rate_to_use = Math.Max(0.05f, devoilementRate - 0.05f);
+    }
+    else
+    {
+        quantile = 4;
+        devoilement_rate_to_use = Math.Max(0.05f, devoilementRate - 0.10f);
+    }
     if (respSuccessRate > 50){
         float percentage_to_devoile = (respSuccessRate - 50) * 2 * 0.01f;
-        float rate_to_devoile = percentage_to_devoile * devoilementRate;
+        float rate_to_devoile = percentage_to_devoile * devoilement_rate_to_use;
         devoilement_rate_tableau += rate_to_devoile;
+        // 每次增加 1%
+        accumulated_success_cycle += 1;
+        if (accumulated_success_cycle == 3){
+            acceleration_mode = true;
+            devoilementRate = Math.Min(1, devoilementRate*2);
+            GameObject panel = ExerciceCanvas.transform.Find("Panel").gameObject;
+            Image panelImage = panel.GetComponent<Image>();
+            panelImage.color = new Color(1f, 0.84f, 0f, 1f);
+        }
     }
     else{
         float percentage_to_revert = 50 - respSuccessRate * 2 * 0.01f;
         float rate_to_revert = percentage_to_revert * revertRate;
         devoilement_rate_tableau = Math.Max(0, devoilement_rate_tableau - rate_to_revert);
+        // 每次增加 1%
+        accumulated_success_cycle = 0;
+        acceleration_mode = false;
+        devoilementRate = devoilementRates[difficulte];
+        GameObject panel = ExerciceCanvas.transform.Find("Panel").gameObject;
+        Image panelImage = panel.GetComponent<Image>();
+        panelImage.color = new Color(1f, 1f, 1f, 1f);
     }
-
-     // 每次增加 1%
     
+
     setOpacity(devoilement_rate_tableau);
 }
 
@@ -286,8 +318,6 @@ public class CanvasManager : MonoBehaviour
         mouseControl.playerRotation = true;
         CloseGame();
     }
-
-
 
     private void teleport(Transform pos)
     {
