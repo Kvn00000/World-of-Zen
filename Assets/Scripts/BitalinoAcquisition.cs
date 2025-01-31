@@ -184,6 +184,7 @@ public class BitalinoScript : MonoBehaviour
         {
             isAcquisitionStarted = true;
             File.WriteAllText(filePath, string.Empty);
+            File.AppendAllText(filePath, "time bpm respiration\n");
             UnityEngine.Debug.Log("Acquisition démarrée avec succès");
 
             start = 0;

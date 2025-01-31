@@ -9,7 +9,7 @@ import sys
 # **加载 config.json**
 config_path = "Assets/UserConfig/config.json"
 if not os.path.exists(config_path):
-    raise FileNotFoundError(f"❌ Config file {config_path} not found. Please create config.json")
+    raise FileNotFoundError(f" Config file {config_path} not found. Please create config.json")
 
 with open(config_path, "r") as file:
     config = json.load(file)
@@ -30,26 +30,26 @@ def clean_folder(folder_path):
         files = glob.glob(os.path.join(folder_path, "*"))
         for f in files:
             os.remove(f)
-        print(f"🧹 Cleared {folder_path}")
+        print(f" Cleared {folder_path}")
     else:
         os.makedirs(folder_path)
-        print(f"📁 Created {folder_path}")
+        print(f" Created {folder_path}")
 
 # **清理数据**
-clean_folder(TRANSFORMED_DATA_FOLDER)
+# clean_folder(TRANSFORMED_DATA_FOLDER)
 
 # **信号处理函数，确保所有子进程关闭**
 def cleanup_processes():
-    print("\n🛑 Terminating all subprocesses...")
+    print("\n Terminating all subprocesses...")
     for process in processes:
         if process and process.poll() is None:  # Check if process is still running
             process.terminate()
             try:
                 process.wait(timeout=5)  # Give it time to exit
             except subprocess.TimeoutExpired:
-                print(f"⚠️ Force-killing process {process.pid}")
+                print(f" Force-killing process {process.pid}")
                 process.kill()  # Force kill if it doesn't exit gracefully
-    print("✅ All subprocesses terminated. Exiting.")
+    print(" All subprocesses terminated. Exiting.")
 
 # **捕获 SIGINT (Ctrl+C) 和 SIGTERM (kill command)**
 def signal_handler(sig, frame):
@@ -76,8 +76,8 @@ signal.signal(signal.SIGTERM, signal_handler)
 # time.sleep(0.5)
 
 # **启动 Compute Cycle Success Rate**
-success_rate_script = "Assets/Scripts/Data_process/compute_cycle_success_rate.py"
-print(f"🚀 Launching {success_rate_script}...")
+success_rate_script = r"Assets/Scripts/Data_process/compute_cycle_success_rate.py"
+print(f" Launching {success_rate_script}...")
 monitor_process = subprocess.Popen([PYTHON_PATH, success_rate_script])
 processes.append(monitor_process)
 
@@ -88,7 +88,7 @@ try:
     # data_process.wait()
     monitor_process.wait()
 except KeyboardInterrupt:
-    print("\n🛑 KeyboardInterrupt detected. Stopping processes...")
+    print("\n KeyboardInterrupt detected. Stopping processes...")
 finally:
     cleanup_processes()
-    print("✅ Exiting cleanly.")
+    print(" Exiting cleanly.")

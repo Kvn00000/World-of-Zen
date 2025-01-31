@@ -240,43 +240,43 @@ void StartFileWatcher()
         fileWatcher.Changed += OnFileChanged;
         fileWatcher.EnableRaisingEvents = true;
 
-        UnityEngine.Debug.Log("📡 FileSystemWatcher started. Watching: " + resultsFilePath);
+        UnityEngine.Debug.Log("FileSystemWatcher started. Watching: " + resultsFilePath);
     }
 
 private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        UnityEngine.Debug.Log($"🔍 File change detected: {e.FullPath}, ChangeType: {e.ChangeType}");
+        UnityEngine.Debug.Log($"File change detected: {e.FullPath}, ChangeType: {e.ChangeType}");
         ReadLastResult();
     }
 
     void ReadLastResult()
 {
-    UnityEngine.Debug.Log("📖 Reading last line from file...");
+    UnityEngine.Debug.Log("Reading last line from file...");
 
     try
     {
         string[] lines = File.ReadAllLines(resultsFilePath);
         if (lines.Length < 2)
         {
-            UnityEngine.Debug.Log("⚠ No valid data found in the file.");
+            UnityEngine.Debug.Log(" No valid data found in the file.");
             return;
         }
 
         string lastResult = lines[lines.Length - 1]; // 读取最后一行
-        UnityEngine.Debug.Log($"📋 Last line read: {lastResult}");
+        UnityEngine.Debug.Log($" Last line read: {lastResult}");
 
         string[] resultData = lastResult.Split('\t');
 
         if (resultData.Length < 5)
         {
-            UnityEngine.Debug.LogError("❌ Data format error: less than 5 columns.");
+            UnityEngine.Debug.LogError(" Data format error: less than 5 columns.");
             return;
         }
 
         // **这里确保即使 `lastNumber` 还是 0，也能读取到第一条数据**
         if (!int.TryParse(resultData[0], out int newNumber))
         {
-            UnityEngine.Debug.LogError("❌ Failed to parse 'number' column.");
+            UnityEngine.Debug.LogError("Failed to parse 'number' column.");
             return;
         }
 
@@ -288,7 +288,7 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             string type = resultData[3];
             string successRate = resultData[4];
 
-            UnityEngine.Debug.Log($"✅ New data detected! Number: {newNumber}, Duration: {duration}, Type: {type}, SuccessRate: {successRate}%");
+            UnityEngine.Debug.Log($"New data detected! Number: {newNumber}, Duration: {duration}, Type: {type}, SuccessRate: {successRate}%");
 
             // **存储到变量，不直接修改 UI**
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
@@ -296,19 +296,19 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
         }
         else
         {
-            UnityEngine.Debug.Log("🔄 No new data detected.");
+            UnityEngine.Debug.Log("No new data detected.");
         }
     }
     catch (IOException ex)
     {
-        UnityEngine.Debug.LogError("❌ File read error: " + ex.Message);
+        UnityEngine.Debug.LogError("File read error: " + ex.Message);
     }
 }
 
 
     private void OnDestroy()
     {
-        UnityEngine.Debug.Log("🛑 Stopping FileSystemWatcher...");
+        UnityEngine.Debug.Log("Stopping FileSystemWatcher...");
         fileWatcher.EnableRaisingEvents = false;
         fileWatcher.Dispose();
     }
@@ -328,7 +328,7 @@ public void StartBreathingGame()
     // **检查 Python 路径**
     if (string.IsNullOrEmpty(pythonPath))
     {
-        UnityEngine.Debug.LogError("❌ Python path is missing! Check config.json.");
+        UnityEngine.Debug.LogError("Python path is missing! Check config.json.");
         return;
     }
 
@@ -336,7 +336,7 @@ public void StartBreathingGame()
     string pythonExecutable = pythonPath;
     if (!File.Exists(pythonExecutable) && pythonExecutable != "python" && pythonExecutable != "python3")
     {
-        UnityEngine.Debug.LogError($"❌ Python executable not found at: {pythonExecutable}");
+        UnityEngine.Debug.LogError($"Python executable not found at: {pythonExecutable}");
         return;
     }
 
@@ -344,11 +344,11 @@ public void StartBreathingGame()
     string scriptPath = Path.Combine(Application.dataPath, "Scripts/Data_process/run_for_a_game.py");
     if (!File.Exists(scriptPath))
     {
-        UnityEngine.Debug.LogError($"❌ Python script not found at: {scriptPath}");
+        UnityEngine.Debug.LogError($"Python script not found at: {scriptPath}");
         return;
     }
 
-    UnityEngine.Debug.Log($"🚀 Running: {pythonExecutable} {scriptPath}");
+    UnityEngine.Debug.Log($"Running: {pythonExecutable} {scriptPath}");
 
     // **启动 Python 进程**
     breathingProcess = new Process();
@@ -364,14 +364,14 @@ public void StartBreathingGame()
     {
         if (!string.IsNullOrEmpty(args.Data))
         {
-            UnityEngine.Debug.Log($"🐍 [Python]: {args.Data}");
+            UnityEngine.Debug.Log($"[Python]: {args.Data}");
         }
     };
     breathingProcess.ErrorDataReceived += (sender, args) =>
     {
         if (!string.IsNullOrEmpty(args.Data))
         {
-            UnityEngine.Debug.LogError($"🐍❌ [Python Error]: {args.Data}");
+            UnityEngine.Debug.LogError($"[Python Error]: {args.Data}");
         }
     };
 
@@ -383,7 +383,7 @@ public void StartBreathingGame()
     }
     catch (System.Exception e)
     {
-        UnityEngine.Debug.LogError($"❌ Failed to start process: {e.Message}");
+        UnityEngine.Debug.LogError($"Failed to start process: {e.Message}");
         return;
     }
 }
@@ -392,7 +392,7 @@ private void StopBreathingProcess()
     {
         if (breathingProcess != null && !breathingProcess.HasExited)
         {
-            UnityEngine.Debug.Log("🛑 Stopping Python script...");
+            UnityEngine.Debug.Log("Stopping Python script...");
             breathingProcess.Kill();
             breathingProcess.Dispose();
         }

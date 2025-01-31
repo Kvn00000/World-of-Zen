@@ -59,7 +59,7 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
     current_cycle = 1
     start_time = 0  # Track phase start time
     phase_index = 0  # Track current phase index
-    next_number = get_last_number(output_file)  # Get next sequence number
+    next_number = 0  # Get next sequence number
     time_without_updates = 0  # Track timeout
 
     # Ensure output directory exists
@@ -67,11 +67,10 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
     os.makedirs(output_dir, exist_ok=True)
 
     # Create file with headers if it does not exist
-    if not os.path.exists(output_file):
-        with open(output_file, "w") as f:
-            f.write("number\tcycle\tlong\ttype\tsuccessrate\n")
+    with open(output_file, "w") as f:
+        f.write("number\tcycle\tlong\ttype\tsuccessrate\n")
 
-    print(f"📡 Monitoring {file_path} for breathing patterns: {phases}...")
+    print(f" Monitoring {file_path} for breathing patterns: {phases}...")
 
     while True:
         time.sleep(1)  # Check every second
@@ -81,20 +80,20 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
         if new_mod_time == last_mod_time:
             time_without_updates += 1
             if time_without_updates >= timeout:
-                print("⏳ No new data detected for a long time. Exiting...")
+                print(" No new data detected for a long time. Exiting...")
                 break
             continue
         last_mod_time = new_mod_time
         time_without_updates = 0  # Reset timeout
 
         # Read latest data
-        df = pd.read_csv(file_path, sep="\t")
+        df = pd.read_csv(file_path, sep=" ")
         if df.shape[0] == last_data_size:
             continue  # No new rows, continue waiting
         new_rows = df.shape[0] - last_data_size
         last_data_size = df.shape[0]
 
-        print(f"📥 Detected {new_rows} new data rows.")
+        print(f" Detected {new_rows} new data rows.")
 
         # Get latest time
         latest_time = df["time"].max()
@@ -109,7 +108,7 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
             with open(output_file, "a") as f:
                 f.write(f"{next_number}\t{current_cycle}\t{phase_duration}\t{phase_type}\t{success_rate}\n")
 
-            print(f"✅ Phase: {phase_type.upper()} ({start_time}s - {start_time+phase_duration}s) Success Rate: {success_rate}%")
+            print(f" Phase: {phase_type.upper()} ({start_time}s - {start_time+phase_duration}s) Success Rate: {success_rate}%")
 
             # Move to the next phase
             next_number += 1
@@ -119,7 +118,7 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
                 current_cycle += 1  # Increment cycle number
 
 # Run the script
-file_path = "Assets/Data/transformed/data.txt"
+file_path = "Assets/Data/data.txt"
 output_file = "Assets/Data/transformed/breathing_success_data.txt"
 phases = [4, 7, 8]  # Breathing cycle durations
 monitor_and_evaluate(file_path, phases, output_file)
