@@ -279,6 +279,7 @@ public class CanvasManager : MonoBehaviour
         }
 
         devoilementText.text = $"Le taux de dévoilement actuel : {devoilementRate}";
+        
     }
     
     public void AdjustOpacity()
@@ -320,7 +321,7 @@ public class CanvasManager : MonoBehaviour
         accumulated_success_cycle += 1;
         UnityEngine.Debug.Log("Accumulated success cycle: " + accumulated_success_cycle);
         
-        if (accumulated_success_cycle == 1) // 3
+        if (accumulated_success_cycle == 2) // 3
         {
             acceleration_mode = true;
             devoilementRate = Math.Min(1, devoilementRate * 2);
@@ -493,21 +494,21 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
             isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
-                time_value = 8;
-                exerciceStepText = $"Expirez pendant {time_value} s";
+                time_value = 0;
+                exerciceStepText = $"Expirez pendant 8 s";
                 play_8_s = true;
             }
 
             else if(duration == "4"){
-                time_value = 7;
-                exerciceStepText = $"Tenez votre respiration pendant {time_value} s";
+                time_value = 0;
+                exerciceStepText = $"Tenez votre respiration pendant 7 s";
                 play_7_s = true;
             }
             
             else if(duration == "8" && inGame) 
             {
-                time_value = 4;
-                exerciceStepText = $"Inspirez pendant {4} s";
+                time_value = 0;
+                exerciceStepText = $"Inspirez pendant 4 s";
                 play_4_s = true;
             }
         }
