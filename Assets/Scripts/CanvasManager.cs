@@ -52,7 +52,7 @@ public class CanvasManager : MonoBehaviour
     private string configPath = "Assets/UserConfig/config.json"; // JSON 配置文件路径
     private string pythonPath; // 存储 Python 解释器路径
 
-    private string resultsFilePath = "Assets/Data/transformed/breathing_success_rates.txt";
+    private string resultsFilePath = "Assets/Data/transformed/breathing_success_data.txt";
     public TextMeshProUGUI resultsText;
     private Process breathingProcess;
 
