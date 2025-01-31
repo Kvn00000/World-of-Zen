@@ -57,7 +57,7 @@ def monitor_and_transform_opensignals(directory, output_file, output_breathing_f
     print(f"🔄 Monitoring {file_path}...")
 
     while True:
-        time.sleep(0.1)  # **Avoid CPU overload, check every 0.1s**
+        time.sleep(1)  # **Avoid CPU overload, check every 0.1s**
 
         # **Read new lines only**
         with open(file_path, "r") as file:
