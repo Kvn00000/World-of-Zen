@@ -67,6 +67,7 @@ public class BitalinoScript : MonoBehaviour
     private string bpmText;
 
     private string cheminFichier = "./Assets/Data/data.txt";
+    public AudioSource quatre_s;
 
 
     private void Awake(){
@@ -209,6 +210,7 @@ public class BitalinoScript : MonoBehaviour
             File.AppendAllText(filePath, "time bpm respiration\n");
             UnityEngine.Debug.Log("Acquisition démarrée avec succès");
             exerciceStep.text = "Inspirez pendant 4 s";
+            quatre_s.Play();
 
             start = 0;
         }
