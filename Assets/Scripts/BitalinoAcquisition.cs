@@ -45,7 +45,7 @@ public class BitalinoScript : MonoBehaviour
     private float intervalleLecture = 0.001f; // Lire toutes les 1 secondes (ou ajustez à votre besoin)
 
     // Respiration
-    private float respirationInitTime = 3f;
+    private float respirationInitTime = 2f;
     private bool resp = false;
 
 
@@ -85,6 +85,11 @@ public class BitalinoScript : MonoBehaviour
         if(Time.time - startTime > BPMMinitTime){
             calculateBPM();
         }
+
+        if(Time.time - startTime > respirationInitTime){
+            resp = true;
+        }
+
         if (isScanning || isConnecting || isAcquisitionStarted)
         {
             return;
@@ -228,6 +233,11 @@ public class BitalinoScript : MonoBehaviour
         // Show the current package of data.
         start += 0.1f;
         string outputString = (start).ToString();
+        if(resp){
+            toPlot.RemoveAt(0);
+        }
+        toPlot.Add(outputString[1]);
+        ShowGraph(toPlot);
 
         for (int j = 0; j < data.Length; j++)
         {
@@ -330,16 +340,20 @@ public class BitalinoScript : MonoBehaviour
         }
         circles.Clear();
 
+        var last10Values = valueList.TakeLast(10);
+
         GameObject lastCircleGameObject = null;
-        for(int i = 0; i < valueList.Count; i++){
-            float xPosition = (i+1)*11f ;
-            float yPosition = (valueList[i] / yMaximum) * graphHeight;
+        int z = 0;
+        foreach(var value in last10Values){
+            float xPosition = (z+1)*10f ;
+            float yPosition = (value / yMaximum) * graphHeight;
             GameObject cGO = CreateCircle(new Vector2(xPosition, yPosition));
             if(lastCircleGameObject != null){
                 CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, cGO.GetComponent<RectTransform>().anchoredPosition);
             }
             lastCircleGameObject = cGO;
 
+            z++;
         }
     }
 
