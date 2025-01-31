@@ -22,7 +22,8 @@ public class CanvasManager : MonoBehaviour
     public GameObject paintCanvas;
     public GameObject PictureMenu;
     public GameObject ExerciceCanvas;
-
+    public GameObject MainCamera;
+    private MouseControl mouseControl;
 
     [Header("Transform Position")]
     public Transform insidePos;
@@ -74,6 +75,7 @@ public class CanvasManager : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         playerMovement.canMove = false;
         pictureSlider.onValueChanged.AddListener(UpdateSliderValue);
+        mouseControl = MainCamera.GetComponent<MouseControl>();
     }
 
     void LoadConfig()
@@ -172,8 +174,9 @@ public class CanvasManager : MonoBehaviour
             // Check if the player presses 'E' to change the scene
             if (Input.GetKeyDown(KeyCode.E) && paintCanvas.activeSelf)
             {
-
+                mouseControl.playerRotation = false;
                 playerMovement.canMove = false;
+                
                 PictureMenu.SetActive(true);
                 //Turn on the respiration game
                 paintCanvas.SetActive(false); // Hide the Canvas once the scene is changed
@@ -209,6 +212,8 @@ public class CanvasManager : MonoBehaviour
         // Désactiver le Canvas et activer le mouvement du joueur
         canv.SetActive(false);
         playerMovement.canMove = true;
+        mouseControl.playerRotation = true;
+
     }
 
 
