@@ -63,6 +63,9 @@ public class CanvasManager : MonoBehaviour
 
     private int difficulte = 0;
 
+    private float devoilement_rate_tableau = 0;
+
+    private bool inGame = false;
     private int lastNumber = 0; // 记录上一次的 number 值
     void Start()
     {
@@ -83,7 +86,7 @@ public class CanvasManager : MonoBehaviour
         }
         else
         {
-            UnityEngine.Debug.LogError("❌ 配置文件 " + configPath + " 不存在，请检查！");
+            UnityEngine.Debug.LogError("配置文件 " + configPath + " 不存在，请检查！");
         }
     }
 
@@ -112,11 +115,16 @@ public class CanvasManager : MonoBehaviour
             CloseCanvas(interiorCanvas);
         }
 
-        if (isNewResultAvailable) // 如果有新数据
+        if (inGame && isNewResultAvailable) // 如果有新数据
         {
             resultsText.text = latestResultText; // 更新 UI
             isNewResultAvailable = false; // 重置标记
-            
+            if (devoilement_rate_tableau >= 1)
+            {
+                inGame = false;
+                CloseGame();
+            }
+            AdjustOpacity();
         }
 
 
@@ -186,15 +194,15 @@ public class CanvasManager : MonoBehaviour
 
 
     }
+    
+    public void AdjustOpacity()
+{
+    devoilement_rate_tableau += 0.5f; // 每次增加 1%
+    setOpacity(devoilement_rate_tableau);
+}
 
-    public void AdjustOpacity(GameObject canv){
 
-        AdjustQuantileShow(canv);
-    }
 
-    public void AdjustQuantileShow(GameObject canv){
-
-    }
 
     public void CloseCanvas(GameObject canv)
     {
@@ -220,9 +228,37 @@ public void StartGame()
     {
         PictureMenu.SetActive(false);
         ExerciceCanvas.SetActive(true);
+        setOpacity(0);
         StartFileWatcher();
         StartBreathingGame();
     }
+
+private void setOpacity(float opacity)
+{
+    // 确保获取的是 `ExerciceCanvas` 下 `Panel/Image` 的 `Image` 组件
+    Transform imageTransform = ExerciceCanvas.transform.Find("Panel/Image");
+
+    if (imageTransform != null)
+    {
+        Image img = imageTransform.GetComponent<Image>();
+        if (img != null)
+        {
+            Color color = img.color;
+            color.a = opacity; // 设置透明度
+            img.color = color;
+            devoilement_rate_tableau = opacity;
+            UnityEngine.Debug.Log($"成功修改 Image 透明度: {opacity}");
+        }
+        else
+        {
+            UnityEngine.Debug.LogWarning("⚠️ 找到了 `Panel/Image`，但没有 `Image` 组件！");
+        }
+    }
+    else
+    {
+        UnityEngine.Debug.LogWarning("⚠️ `ExerciceCanvas` 下找不到 `Panel/Image`，请检查层级结构！");
+    }
+}
 
 void StartFileWatcher()
     {
@@ -315,6 +351,7 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
 
 public void StartBreathingGame()
 {
+    inGame = true;
     LoadConfig(); // 确保在启动前加载配置
 
     ExerciceCanvas.SetActive(true);
@@ -403,6 +440,7 @@ private void StopBreathingProcess()
         ExerciceCanvas.SetActive(false);
         playerMovement.canMove = true;
         StopBreathingProcess();
+        OnDestroy();
     }
 
 private void OnApplicationQuit()
