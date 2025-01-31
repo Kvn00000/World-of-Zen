@@ -41,7 +41,7 @@ def monitor_and_transform_opensignals(directory, output_file, output_breathing_f
     if not file_path:
         print("❌ No OpenSignals data file found, exiting.")
         return
-
+    open(file_path, "w").close()
     # **Clear output file if it exists**
     if os.path.exists(output_file):
         print(f"🗑️ Clearing existing output file: {output_file}")
