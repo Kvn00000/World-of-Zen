@@ -56,11 +56,14 @@ public class CanvasManager : MonoBehaviour
     private string resultsFilePath = "Assets/Data/transformed/breathing_success_data.txt";
     private FileSystemWatcher fileWatcher;
     public TextMeshProUGUI resultsText;
+    public TextMeshProUGUI exerciceStep;
     private Process breathingProcess;
 
     private bool isNewResultAvailable = false; // 标志是否有新结果
 
     private string latestResultText;  // 变量存储最新的结果
+
+    private string exerciceStepText;
 
     private int difficulte = 0;
 
@@ -70,6 +73,10 @@ public class CanvasManager : MonoBehaviour
     private int lastNumber = 0; // 记录上一次的 number 值
 
     public AudioSource exerciceMusic;
+
+    public AudioSource quatre_s;
+    public AudioSource sept_s;
+    public AudioSource huit_s;
 
     void Start()
     {
@@ -123,6 +130,9 @@ public class CanvasManager : MonoBehaviour
         if (inGame && isNewResultAvailable) // 如果有新数据
         {
             resultsText.text = latestResultText; // 更新 UI
+
+            exerciceStep.text = exerciceStepText;
+            
             isNewResultAvailable = false; // 重置标记
             if (devoilement_rate_tableau >= 1)
             {
@@ -342,6 +352,22 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
 
             // **存储到变量，不直接修改 UI**
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
+
+            if(duration == "7"){
+                exerciceStepText = $"Expirez pendant 8 s";
+                huit_s.Play();
+            }
+
+            else if(duration == "4"){
+                exerciceStepText = $"Tenez votre respiration pendant 7 s";
+                sept_s.Play();
+            }
+            
+            else if(duration == "8" && inGame) {
+                exerciceStepText = $"Inspirez pendant 4 s";
+                quatre_s.Play();
+            }
+
             isNewResultAvailable = true; // 标记有新数据
         }
         else

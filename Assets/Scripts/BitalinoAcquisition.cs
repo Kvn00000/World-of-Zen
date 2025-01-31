@@ -57,6 +57,7 @@ public class BitalinoScript : MonoBehaviour
     private List<GameObject> lines;
 
 
+    public TextMeshProUGUI exerciceStep;
 
     private float BPMMinitTime = 30f;
     private bool bpm = false;
@@ -68,6 +69,11 @@ public class BitalinoScript : MonoBehaviour
     private string cheminFichier = "./Assets/Data/data.txt";
 
 
+    private void Awake(){
+        graphContainer = transform.Find("Container").GetComponent<RectTransform>();
+        circles = new List<GameObject>();
+        lines = new List<GameObject>();
+    }
     // Start is called before the first frame update
     private void Start()
     {
@@ -202,6 +208,7 @@ public class BitalinoScript : MonoBehaviour
             File.WriteAllText(filePath, string.Empty);
             File.AppendAllText(filePath, "time bpm respiration\n");
             UnityEngine.Debug.Log("Acquisition démarrée avec succès");
+            exerciceStep.text = "Inspirez pendant 4 s";
 
             start = 0;
         }
@@ -233,16 +240,19 @@ public class BitalinoScript : MonoBehaviour
         // Show the current package of data.
         start += 0.1f;
         string outputString = (start).ToString();
-        if(resp){
+        if(toPlot.Count > 10){
             toPlot.RemoveAt(0);
         }
-        toPlot.Add(outputString[1]);
-        ShowGraph(toPlot);
+        // toPlot.Add(outputString[1]);
 
         for (int j = 0; j < data.Length; j++)
         {
             outputString += " " + data[j]  ;
+            if(j == 1){
+                toPlot.Add(data[j]);
+            }
         }
+        ShowGraph(toPlot);
         outputString+= "\n";
         // UnityEngine.Debug.Log(outputString);
 
@@ -339,8 +349,7 @@ public class BitalinoScript : MonoBehaviour
             Destroy(circles[i]);
         }
         circles.Clear();
-
-        var last10Values = valueList.TakeLast(10);
+        var last10Values = valueList;
 
         GameObject lastCircleGameObject = null;
         int z = 0;
