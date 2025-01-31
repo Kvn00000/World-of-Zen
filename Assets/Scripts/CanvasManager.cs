@@ -53,9 +53,15 @@ public class CanvasManager : MonoBehaviour
     private string pythonPath; // 存储 Python 解释器路径
 
     private string resultsFilePath = "Assets/Data/transformed/breathing_success_data.txt";
+    private FileSystemWatcher fileWatcher;
     public TextMeshProUGUI resultsText;
     private Process breathingProcess;
 
+    private bool isNewResultAvailable = false; // 标志是否有新结果
+
+    private string latestResultText;  // 变量存储最新的结果
+
+    private int difficulte = 0;
 
     private int lastNumber = 0; // 记录上一次的 number 值
     void Start()
@@ -106,6 +112,12 @@ public class CanvasManager : MonoBehaviour
             CloseCanvas(interiorCanvas);
         }
 
+        if (isNewResultAvailable) // 如果有新数据
+        {
+            resultsText.text = latestResultText; // 更新 UI
+            isNewResultAvailable = false; // 重置标记
+            
+        }
 
 
         // Display the Canvas when the door is detected and press 'E' to change the scene
@@ -172,6 +184,16 @@ public class CanvasManager : MonoBehaviour
             }
         }
 
+
+    }
+
+    public void AdjustOpacity(GameObject canv){
+
+        AdjustQuantileShow(canv);
+    }
+
+    public void AdjustQuantileShow(GameObject canv){
+
     }
 
     public void CloseCanvas(GameObject canv)
@@ -198,7 +220,97 @@ public void StartGame()
     {
         PictureMenu.SetActive(false);
         ExerciceCanvas.SetActive(true);
-        //StartBreathingGame();
+        StartFileWatcher();
+        StartBreathingGame();
+    }
+
+void StartFileWatcher()
+    {
+        if (!File.Exists(resultsFilePath))
+        {
+            File.WriteAllText(resultsFilePath, "number\tcycle\tlong\ttype\tsuccessrate\n");
+        }
+
+        fileWatcher = new FileSystemWatcher(Path.GetDirectoryName(resultsFilePath))
+        {
+            Filter = Path.GetFileName(resultsFilePath),
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size
+        };
+
+        fileWatcher.Changed += OnFileChanged;
+        fileWatcher.EnableRaisingEvents = true;
+
+        UnityEngine.Debug.Log("📡 FileSystemWatcher started. Watching: " + resultsFilePath);
+    }
+
+private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        UnityEngine.Debug.Log($"🔍 File change detected: {e.FullPath}, ChangeType: {e.ChangeType}");
+        ReadLastResult();
+    }
+
+    void ReadLastResult()
+{
+    UnityEngine.Debug.Log("📖 Reading last line from file...");
+
+    try
+    {
+        string[] lines = File.ReadAllLines(resultsFilePath);
+        if (lines.Length < 2)
+        {
+            UnityEngine.Debug.Log("⚠ No valid data found in the file.");
+            return;
+        }
+
+        string lastResult = lines[lines.Length - 1]; // 读取最后一行
+        UnityEngine.Debug.Log($"📋 Last line read: {lastResult}");
+
+        string[] resultData = lastResult.Split('\t');
+
+        if (resultData.Length < 5)
+        {
+            UnityEngine.Debug.LogError("❌ Data format error: less than 5 columns.");
+            return;
+        }
+
+        // **这里确保即使 `lastNumber` 还是 0，也能读取到第一条数据**
+        if (!int.TryParse(resultData[0], out int newNumber))
+        {
+            UnityEngine.Debug.LogError("❌ Failed to parse 'number' column.");
+            return;
+        }
+
+        // **如果 lastNumber 还没有被初始化，直接读取**
+        if (lastNumber == 0 || newNumber > lastNumber)
+        {
+            lastNumber = newNumber; // 更新 lastNumber
+            string duration = resultData[2];
+            string type = resultData[3];
+            string successRate = resultData[4];
+
+            UnityEngine.Debug.Log($"✅ New data detected! Number: {newNumber}, Duration: {duration}, Type: {type}, SuccessRate: {successRate}%");
+
+            // **存储到变量，不直接修改 UI**
+            latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
+            isNewResultAvailable = true; // 标记有新数据
+        }
+        else
+        {
+            UnityEngine.Debug.Log("🔄 No new data detected.");
+        }
+    }
+    catch (IOException ex)
+    {
+        UnityEngine.Debug.LogError("❌ File read error: " + ex.Message);
+    }
+}
+
+
+    private void OnDestroy()
+    {
+        UnityEngine.Debug.Log("🛑 Stopping FileSystemWatcher...");
+        fileWatcher.EnableRaisingEvents = false;
+        fileWatcher.Dispose();
     }
 
 public void StartBreathingGame()
@@ -274,57 +386,6 @@ public void StartBreathingGame()
         UnityEngine.Debug.LogError($"❌ Failed to start process: {e.Message}");
         return;
     }
-
-    StartCoroutine(MonitorBreathingResults());
-}
-
-
-
-    private IEnumerator MonitorBreathingResults()
-{
-    while (true)
-    {
-        yield return new WaitForSeconds(1); // 每秒检测一次
-
-        if (!File.Exists(resultsFilePath))
-        {
-            resultsText.text = "No results found.";
-            continue;
-        }
-
-        string[] lines = File.ReadAllLines(resultsFilePath);
-        if (lines.Length < 2)
-        {
-            resultsText.text = "No valid data recorded.";
-            continue;
-        }
-
-        string lastResult = lines[lines.Length - 1];
-        string[] resultData = lastResult.Split('\t');
-
-        if (resultData.Length < 5)
-        {
-            resultsText.text = "Invalid data format.";
-            continue;
-        }
-
-        int newNumber;
-        if (!int.TryParse(resultData[0], out newNumber))
-        {
-            resultsText.text = "Error reading number.";
-            continue;
-        }
-
-        if (newNumber > lastNumber)
-        {
-            lastNumber = newNumber;
-            string duration = resultData[2];  // X1
-            string type = resultData[3];      // X2
-            string successRate = resultData[4]; // X3
-
-            resultsText.text = $"Last {duration} seconds {type} success rate is {successRate}%";
-        }
-    }
 }
 
 private void StopBreathingProcess()
@@ -348,6 +409,7 @@ private void OnApplicationQuit()
     {
         StopBreathingProcess();
     }
+
 [System.Serializable]  // 必须加这个，否则 JsonUtility 无法解析
     private class ConfigData
     {

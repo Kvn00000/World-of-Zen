@@ -119,7 +119,7 @@ def monitor_and_evaluate(file_path, phases, output_file, timeout=50):
                 current_cycle += 1  # Increment cycle number
 
 # Run the script
-file_path = "Assets/Data/transformed/transformed_data.txt"
-output_file = "Assets/Data/transformed/breathing_success_rates.txt"
+file_path = "Assets/Data/transformed/data.txt"
+output_file = "Assets/Data/transformed/breathing_success_data.txt"
 phases = [4, 7, 8]  # Breathing cycle durations
 monitor_and_evaluate(file_path, phases, output_file)
