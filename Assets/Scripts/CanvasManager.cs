@@ -79,6 +79,8 @@ public class CanvasManager : MonoBehaviour
     public Slider pictureSlider;
     public TextMeshProUGUI sliderValue;
 
+    public TextMeshProUGUI NiveauEstime;
+
 
     
     private string configPath = "Assets/UserConfig/config.json"; // JSON 配置文件路径
@@ -87,6 +89,7 @@ public class CanvasManager : MonoBehaviour
     private string resultsFilePath = "Assets/Data/transformed/breathing_success_data.txt";
     private FileSystemWatcher fileWatcher;
     public TextMeshProUGUI resultsText;
+    public TextMeshProUGUI calibrationResultsText;
     public TextMeshProUGUI exerciceStep;
     private Process breathingProcess;
 
@@ -105,8 +108,10 @@ public class CanvasManager : MonoBehaviour
     private float devoilementRate;
     private float revertRate;
     private float respSuccessRate = 0;
-    private bool acceleration_mode = false;
+    private bool inCalibration = false;
+    private bool stoppingCalibration = false;
     private int accumulated_success_cycle = 0;
+
 
     private int quantile = 0;
     public AudioSource exerciceMusic;
@@ -204,6 +209,11 @@ public class CanvasManager : MonoBehaviour
         }
 
 
+        if (stoppingCalibration){
+            stoppingCalibration = false;
+            inCalibration = false;
+            StopCalibration();
+        }
         // Display the Canvas when the door is detected and press 'E' to change the scene
         if (doorDetection)
         {
@@ -234,7 +244,6 @@ public class CanvasManager : MonoBehaviour
                 doorCanvas.SetActive(false);
             }
         }
-
 
 
         if (paintDetection)
@@ -323,7 +332,6 @@ public class CanvasManager : MonoBehaviour
         
         if (accumulated_success_cycle == 2) // 3
         {
-            acceleration_mode = true;
             devoilementRate = Math.Min(1, devoilementRate * 2);
             UnityEngine.Debug.Log("Acceleration mode activated! devoilementRate doubled: " + devoilementRate);
 
@@ -345,7 +353,6 @@ public class CanvasManager : MonoBehaviour
         UnityEngine.Debug.Log("Updated devoilement_rate_tableau: " + devoilement_rate_tableau);
         
         accumulated_success_cycle = 0;
-        acceleration_mode = false;
         accelerationModeText.text = "";
         devoilementRate = devoilementRates[difficulte];
         UnityEngine.Debug.Log("Acceleration mode deactivated. Resetting devoilementRate to difficulty setting: " + devoilementRate);
@@ -379,6 +386,29 @@ public class CanvasManager : MonoBehaviour
             firstTime = false;
         }
     }
+
+public void StartCalibration(){
+        UnityEngine.Debug.Log("Calibration started.");
+        inCalibration = true;
+        StartFileWatcher();
+        StartBreathingGame();
+        if (exerciceMusic != null)
+        {
+            exerciceMusic.Play(); // Lance la musique
+            UnityEngine.Debug.Log("Music started.");
+        }
+    }
+
+public void StopCalibration(){
+        UnityEngine.Debug.Log("Calibration stopped.");
+        inCalibration = false;
+        NiveauEstime.text = "Niveau estimé: " + difficulte;
+        calibrationResultsText.text = "Ton niveau estimé est: " + difficulte + "\n difficulté est maintenant: " + difficulte;
+        resultsText.text = "";
+        exerciceStep.text = "";
+        StopBreathingProcess();
+}
+
 
 public void StartGame()
     {
@@ -444,8 +474,48 @@ void StartFileWatcher()
 private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
         UnityEngine.Debug.Log($"File change detected: {e.FullPath}, ChangeType: {e.ChangeType}");
-        ReadLastResult();
+        if (!inCalibration){
+            ReadLastResult();
+        }else{
+            UnityEngine.Debug.Log("Calibration in progress...File changed.");
+            CheckCalibrationFinished();
+            ReadLastResult();
+        }
+        
     }
+
+private void CheckCalibrationFinished(){
+    try
+    {
+        string[] lines = File.ReadAllLines(resultsFilePath);
+        float totalSuccessRate = 0;
+        int count = 0;
+        int calibration_time = 0;
+        foreach (string line in lines)
+        {
+            string[] resultData = line.Split('\t');
+            if (resultData.Length >= 5 && int.TryParse(resultData[2], out int duration) && float.TryParse(resultData[4], out float successRate))
+            {
+                calibration_time += duration;
+                totalSuccessRate += successRate;
+                count++;
+                
+                if (calibration_time > 60)
+                {
+                    int averageSuccessRate = count > 0 ? Mathf.RoundToInt(totalSuccessRate / count) : 0;
+                    difficulte = averageSuccessRate;
+                    stoppingCalibration = true;
+                    UnityEngine.Debug.Log("Calibration completed.");
+                    UnityEngine.Debug.Log($"Average success rate during calibration: {averageSuccessRate}%");
+                }
+            }
+        }
+    }
+    catch (IOException ex)
+    {
+        UnityEngine.Debug.LogError("File read error: " + ex.Message);
+    }
+}
 
     void ReadLastResult()
 {
@@ -524,7 +594,7 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
 }
 
 
-    private void OnDestroy()
+ private void OnDestroy()
     {
         UnityEngine.Debug.Log("Stopping FileSystemWatcher...");
         fileWatcher.EnableRaisingEvents = false;
@@ -617,7 +687,7 @@ private void StopBreathingProcess()
         }
     }
 
-    public void StopExercice(){
+public void StopExercice(){
         StopBreathingProcess();
         OnDestroy();
 
@@ -632,6 +702,13 @@ private void StopBreathingProcess()
         ExerciceCanvas.SetActive(false);
         exerciceMusic.Stop();
         playerMovement.canMove = true;
+        if (inCalibration){
+            StopCalibration();
+        }
+        StopBreathingProcess();
+        calibrationResultsText.text = "";
+        NiveauEstime.text = "";
+        exerciceStep.text = "";
     }
 
 private void OnApplicationQuit()
