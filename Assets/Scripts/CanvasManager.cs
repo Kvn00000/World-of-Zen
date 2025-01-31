@@ -68,6 +68,9 @@ public class CanvasManager : MonoBehaviour
 
     private bool inGame = false;
     private int lastNumber = 0; // 记录上一次的 number 值
+
+    public AudioSource exerciceMusic;
+
     void Start()
     {
         // Afficher le Canvas et désactiver le mouvement du joueur au début
@@ -124,7 +127,8 @@ public class CanvasManager : MonoBehaviour
             if (devoilement_rate_tableau >= 1)
             {
                 inGame = false;
-                CloseGame();
+                StopExercice();
+                resultsText.text = "Bravo ! Vous avez terminé l'exercice !"; 
             }
             AdjustOpacity();
         }
@@ -166,7 +170,7 @@ public class CanvasManager : MonoBehaviour
         if (paintDetection)
         {
             // Show the interaction Canvas
-            if (!paintCanvas.activeSelf)
+            if (!paintCanvas.activeSelf && playerMovement.canMove)
             {
                 paintCanvas.SetActive(true);
             }
@@ -213,7 +217,7 @@ public class CanvasManager : MonoBehaviour
         canv.SetActive(false);
         playerMovement.canMove = true;
         mouseControl.playerRotation = true;
-
+        CloseGame();
     }
 
 
@@ -236,6 +240,11 @@ public void StartGame()
         setOpacity(0);
         StartFileWatcher();
         StartBreathingGame();
+
+        if (exerciceMusic != null)
+        {
+            exerciceMusic.Play(); // Lance la musique
+        }
     }
 
 private void setOpacity(float opacity)
@@ -440,12 +449,20 @@ private void StopBreathingProcess()
         }
     }
 
+    public void StopExercice(){
+        StopBreathingProcess();
+        OnDestroy();
+
+        if (exerciceMusic != null)
+        {
+            exerciceMusic.Stop(); // Arrête la musique
+        }
+    }
+
     public void CloseGame()
     {
         ExerciceCanvas.SetActive(false);
         playerMovement.canMove = true;
-        StopBreathingProcess();
-        OnDestroy();
     }
 
 private void OnApplicationQuit()

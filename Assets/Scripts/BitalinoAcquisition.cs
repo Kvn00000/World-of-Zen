@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Diagnostics;
-using System.Linq;  
+using System.Linq;
+using Unity.VisualScripting;
 
 
 public class BitalinoScript : MonoBehaviour
@@ -57,7 +58,7 @@ public class BitalinoScript : MonoBehaviour
 
 
 
-    private float BPMMinitTime = 60f;
+    private float BPMMinitTime = 30f;
     private bool bpm = false;
     private List<int> BPMvalues = new List<int>(3000);
 
@@ -80,6 +81,10 @@ public class BitalinoScript : MonoBehaviour
     // Update function, being constantly invoked by Unity.
     private void Update()
     { 
+
+        if(Time.time - startTime > BPMMinitTime){
+            calculateBPM();
+        }
         if (isScanning || isConnecting || isAcquisitionStarted)
         {
             return;
@@ -110,10 +115,7 @@ public class BitalinoScript : MonoBehaviour
             pluxDevManager.StartAcquisitionUnity(samplingRate, new List<int> {1,2}, resolution);
             return;
         }
-
-        if(Time.time - startTime > BPMMinitTime){
-            calculateBPM();
-        }
+     
 
 
 
@@ -226,14 +228,13 @@ public class BitalinoScript : MonoBehaviour
         // Show the current package of data.
         start += 0.1f;
         string outputString = (start).ToString();
-        UnityEngine.Debug.Log(data.Length);
 
         for (int j = 0; j < data.Length; j++)
         {
             outputString += " " + data[j]  ;
         }
         outputString+= "\n";
-        UnityEngine.Debug.Log(outputString);
+        // UnityEngine.Debug.Log(outputString);
 
         File.AppendAllText(filePath, outputString);
         
@@ -270,12 +271,12 @@ public class BitalinoScript : MonoBehaviour
 
         var data = File.ReadLines(cheminFichier).ToList();
 
-        var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - 200)).ToList();
-
+        var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - 250)).Skip(1).ToList();
+        UnityEngine.Debug.Log("BPMdernieresLignes: " + BPMdernieresLignes[0]);
         List<int> signalCardiaque = BPMdernieresLignes
-                        .Select(line => line.Split('0')) // Séparer les colonnes
+                        .Select(line => line.Split(' ')) // Séparer les colonnes
                         .Where(parts => parts.Length > 1) // Vérifier qu'on a bien assez de colonnes
-                        .Select(parts => int.Parse(parts[2])) // Récupérer la valeur de la colonne A1
+                        .Select(parts => int.Parse(parts[1])) // Récupérer la valeur de la colonne A1
                         .ToList();
 
         int maxBPM = signalCardiaque.Max();
@@ -291,6 +292,8 @@ public class BitalinoScript : MonoBehaviour
         }
         battements = battements * 3;
         bpmInput.text = battements.ToString();
+
+        UnityEngine.Debug.Log("BPM: " + battements);
 
     }
 
