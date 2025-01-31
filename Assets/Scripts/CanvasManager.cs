@@ -115,6 +115,10 @@ public class CanvasManager : MonoBehaviour
     public AudioSource sept_s;
     public AudioSource huit_s;
 
+    private bool play_4_s = false;
+    private bool play_7_s = false;
+    private bool play_8_s = false;
+
     void Start()
     {
         // Afficher le Canvas et désactiver le mouvement du joueur au début
@@ -190,6 +194,10 @@ public class CanvasManager : MonoBehaviour
             AdjustOpacity();
         }
 
+        if (!inGame){
+            exerciceStep.text = "";
+        }
+
 
         // Display the Canvas when the door is detected and press 'E' to change the scene
         if (doorDetection)
@@ -252,6 +260,19 @@ public class CanvasManager : MonoBehaviour
             }
         }
 
+        if (play_4_s && inGame){
+            quatre_s.Play();
+            play_4_s = false;
+        }
+        if (play_7_s && inGame){
+            sept_s.Play();
+            play_7_s = false;
+        }
+        if (play_8_s && inGame){
+            huit_s.Play();
+            play_8_s = false;
+        }
+
 
     }
     
@@ -294,7 +315,7 @@ public class CanvasManager : MonoBehaviour
         accumulated_success_cycle += 1;
         UnityEngine.Debug.Log("Accumulated success cycle: " + accumulated_success_cycle);
         
-        if (accumulated_success_cycle == 3)
+        if (accumulated_success_cycle == 2) // 3
         {
             acceleration_mode = true;
             devoilementRate = Math.Min(1, devoilementRate * 2);
@@ -464,22 +485,19 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
             isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
-                UnityEngine.Debug.Log("Expirez pendant 8 s");
                 exerciceStepText = $"Expirez pendant 8 s";
-                huit_s.Play();
+                play_8_s = true;
             }
 
             else if(duration == "4"){
-                UnityEngine.Debug.Log("Tenez votre respiration pendant 7 s");
                 exerciceStepText = $"Tenez votre respiration pendant 7 s";
-                sept_s.Play();
+                play_7_s = true;
             }
             
-            else //if(duration == "8" && inGame) 
+            else if(duration == "8" && inGame) 
             {
-                UnityEngine.Debug.Log("Inspirez pendant 4 s");
                 exerciceStepText = $"Inspirez pendant 4 s";
-                quatre_s.Play();
+                play_4_s = true;
             }
         }
         else
@@ -507,11 +525,11 @@ public void StartBreathingGame()
     LoadConfig(); // 确保在启动前加载配置
 
     ExerciceCanvas.SetActive(true);
-    resultsText.text = "Breathing Test in Progress...";
+    resultsText.text = "Test de respiration en cours...";
 
     if (!File.Exists(resultsFilePath))
     {
-        File.WriteAllText(resultsFilePath, "number\tcycle\tlong\ttype\tsuccessrate\n");
+        File.WriteAllText(resultsFilePath, "nombre\tcycle\tlong\ttype\ttaux succès\n");
     }
 
     // **检查 Python 路径**
