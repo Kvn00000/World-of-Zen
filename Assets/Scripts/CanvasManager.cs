@@ -96,7 +96,7 @@ public class CanvasManager : MonoBehaviour
 
     private string exerciceStepText;
 
-    private int difficulte = 40;
+    private int difficulte = 20;
 
     private float devoilement_rate_tableau = 0;
 
@@ -178,7 +178,6 @@ public class CanvasManager : MonoBehaviour
         if (inGame && isNewResultAvailable) // 如果有新数据
         {
             resultsText.text = latestResultText; // 更新 UI
-
             exerciceStep.text = exerciceStepText;
             
             isNewResultAvailable = false; // 重置标记
@@ -258,7 +257,6 @@ public class CanvasManager : MonoBehaviour
     
     public void AdjustOpacity()
 {
-    respSuccessRate = 70;
     float devoilement_rate_to_use = devoilement_rate_tableau;
     if (devoilement_rate_tableau < 25)
     {
@@ -442,7 +440,7 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
 
             // **存储到变量，不直接修改 UI**
             latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
-
+            isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
                 exerciceStepText = $"Expirez pendant 8 s";
                 huit_s.Play();
@@ -457,8 +455,6 @@ private void OnFileChanged(object sender, FileSystemEventArgs e)
                 exerciceStepText = $"Inspirez pendant 4 s";
                 quatre_s.Play();
             }
-
-            isNewResultAvailable = true; // 标记有新数据
         }
         else
         {
