@@ -75,18 +75,18 @@ data_process = subprocess.Popen([PYTHON_PATH, data_processing_script])
 processes.append(data_process)
 time.sleep(0.5)
 
-# **启动 Compute Cycle Success Rate**
-success_rate_script = "Assets/Scripts/Data_process/compute_cycle_success_rate.py"
-print(f"🚀 Launching {success_rate_script}...")
-monitor_process = subprocess.Popen([PYTHON_PATH, success_rate_script])
-processes.append(monitor_process)
+# # **启动 Compute Cycle Success Rate**
+# success_rate_script = "Assets/Scripts/Data_process/compute_cycle_success_rate.py"
+# print(f"🚀 Launching {success_rate_script}...")
+# monitor_process = subprocess.Popen([PYTHON_PATH, success_rate_script])
+# processes.append(monitor_process)
 
 # **等待所有进程**
 try:
     if TEST_MODE and mock_process:
         mock_process.wait()
     data_process.wait()
-    monitor_process.wait()
+    # monitor_process.wait()
 except KeyboardInterrupt:
     print("\n🛑 KeyboardInterrupt detected. Stopping processes...")
 finally:
