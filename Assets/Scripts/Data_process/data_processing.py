@@ -57,7 +57,7 @@ def monitor_and_transform_opensignals(directory, output_file, output_breathing_f
     print(f"🔄 Monitoring {file_path}...")
 
     while True:
-        time.sleep(1)  # **Avoid CPU overload, check every 0.1s**
+        time.sleep(0.5)  # **Avoid CPU overload, check every 0.1s**
 
         # **Read new lines only**
         with open(file_path, "r") as file:
@@ -93,9 +93,7 @@ def monitor_and_transform_opensignals(directory, output_file, output_breathing_f
                 if abs(order_time - rythm_order[0]) < 0.05:
                     with open(output_file, "r") as read_out:  # 重新打开以读取完整数据
                         all_lines = read_out.readlines()
-                    start_index = max(0, len(all_lines) - rythm_order[0] * 10)
-                    data_to_evaluate = [int(line.strip().split("\t")[2]) for line in all_lines[start_index:]]
-
+                    data_to_evaluate = [int(line.strip().split("\t")[2]) for line in all_lines[1:][-rythm_order[0] * 10:]]
                     success_rate = compute_success_rate(data_to_evaluate, rythm_order)
                     print(f"Success Rate: {success_rate}%")
 
