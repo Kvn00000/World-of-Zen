@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Diagnostics;
+using System.Linq;  
+
 
 public class BitalinoScript : MonoBehaviour
 {
@@ -35,7 +37,7 @@ public class BitalinoScript : MonoBehaviour
     private bool isConnecting = false;
     private bool isAcquisitionStarted = false;
 
-
+    private float startTime;
     private float start =0f;
     // Lecture de fichier texte
     private float derniereLecture = 0f;
@@ -62,7 +64,7 @@ public class BitalinoScript : MonoBehaviour
     public TextMeshProUGUI bpmInput; 
     private string bpmText;
 
-
+    private string cheminFichier = "./Assets/Data/data.txt";
 
 
     // Start is called before the first frame update
@@ -108,6 +110,12 @@ public class BitalinoScript : MonoBehaviour
             pluxDevManager.StartAcquisitionUnity(samplingRate, new List<int> {1,2}, resolution);
             return;
         }
+
+        if(Time.time - startTime > BPMMinitTime){
+            calculateBPM();
+        }
+
+
 
     }
 
@@ -182,6 +190,7 @@ public class BitalinoScript : MonoBehaviour
     {
         if (acquisitionStatus)
         {
+            startTime = Time.time;
             isAcquisitionStarted = true;
             File.WriteAllText(filePath, string.Empty);
             File.AppendAllText(filePath, "time bpm respiration\n");
@@ -254,6 +263,38 @@ public class BitalinoScript : MonoBehaviour
             // UnityEngine.Debug.Log("Digital Input Update Event Detected on channel " + digInEvent.channel + ". Current state: " + digInEvent.state);
         }
     }
+
+
+    private void calculateBPM(){
+        var lignes = File.ReadAllLines(cheminFichier);
+
+        var data = File.ReadLines(cheminFichier).ToList();
+
+        var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - 200)).ToList();
+
+        List<int> signalCardiaque = BPMdernieresLignes
+                        .Select(line => line.Split('0')) // Séparer les colonnes
+                        .Where(parts => parts.Length > 1) // Vérifier qu'on a bien assez de colonnes
+                        .Select(parts => int.Parse(parts[2])) // Récupérer la valeur de la colonne A1
+                        .ToList();
+
+        int maxBPM = signalCardiaque.Max();
+
+        // Détecter les pics du signal cardiaque
+        int battements = 0;
+        for (int i = 1; i < signalCardiaque.Count - 1; i++)
+        {
+            if ((signalCardiaque[i] >= signalCardiaque[i - 1] && signalCardiaque[i] > signalCardiaque[i + 1]) && signalCardiaque[i] > maxBPM - 100)
+            {
+                battements++; // Compter le pic
+            }
+        }
+        battements = battements * 3;
+        bpmInput.text = battements.ToString();
+
+    }
+
+
 
     [SerializeField] private Sprite circleSprite;
     private RectTransform graphContainer;
