@@ -53,14 +53,28 @@ public class CanvasManager : MonoBehaviour
     public GameObject paintCanvas;
     public GameObject PictureMenu;
     public GameObject ExerciceCanvas;
+    public GameObject BPMCanvas;
     public GameObject MainCamera;
+    public GameObject CalibrationButtonCanva;
     private MouseControl mouseControl;
+    public GameObject exitButtonCanva;
 
     [Header("Transform Position")]
     public Transform insidePos;
     public Transform outsidePos;
     public Transform mainCam; // The camera position to cast the ray from
     
+
+
+
+    public Material targetMaterial; // Matériau dont on veut modifier l'intensité HDR
+    private float hdrIntensity = -1f; // Intensité HDR de base (limitée entre -10 et 10)
+    private Color hdrBaseColor = Color.white;
+
+
+
+
+
 
     
     public GameObject player;
@@ -124,7 +138,7 @@ public class CanvasManager : MonoBehaviour
     private bool play_7_s = false;
     private bool play_8_s = false;
 
-    private int time_value = 0;
+    private float time_value = 0f;
 
     public TextMeshProUGUI accelerationModeText;
     public TextMeshProUGUI devoilementText;
@@ -199,7 +213,12 @@ public class CanvasManager : MonoBehaviour
             {
                 inGame = false;
                 StopExercice();
-                resultsText.text = "Bravo ! Vous avez terminé l'exercice !"; 
+                resultsText.text = "Bravo ! Vous avez terminé l'exercice !";
+                exitButtonCanva.SetActive(true); 
+                if(!inCalibration){
+                    hdrIntensity = Mathf.Clamp(-10, -10f, 10f);
+                    UpdateHDRIntensity();
+                }
             }
             AdjustOpacity();
         }
@@ -213,6 +232,7 @@ public class CanvasManager : MonoBehaviour
             stoppingCalibration = false;
             inCalibration = false;
             StopCalibration();
+            StopExercice();
         }
         // Display the Canvas when the door is detected and press 'E' to change the scene
         if (doorDetection)
@@ -290,7 +310,23 @@ public class CanvasManager : MonoBehaviour
         devoilementText.text = $"Le taux de dévoilement actuel : {devoilementRate}";
         
     }
-    
+
+
+    void UpdateHDRIntensity()
+    {
+        // Vérifie que le matériau possède une propriété "_EmissionColor"
+        if (targetMaterial.HasProperty("_EmissionColor"))
+        {
+            // Applique la couleur blanche et ajuste l'intensité HDR
+            Color hdrColor = hdrBaseColor * Mathf.Pow(2.0f, hdrIntensity);
+            targetMaterial.SetColor("_EmissionColor", hdrColor);
+
+            // Active l'émission dans le rendu si ce n'est pas déjà fait
+            DynamicGI.SetEmissive(GetComponent<Renderer>(), hdrColor);
+        }
+    }
+
+
     public void AdjustOpacity()
 {
     float devoilement_rate_to_use = devoilementRate;
@@ -389,6 +425,7 @@ public class CanvasManager : MonoBehaviour
 
 public void StartCalibration(){
         UnityEngine.Debug.Log("Calibration started.");
+        PictureMenu.SetActive(false);
         inCalibration = true;
         StartFileWatcher();
         StartBreathingGame();
@@ -403,9 +440,12 @@ public void StopCalibration(){
         UnityEngine.Debug.Log("Calibration stopped.");
         inCalibration = false;
         NiveauEstime.text = "Niveau estimé: " + difficulte;
-        calibrationResultsText.text = "Ton niveau estimé est: " + difficulte + "\n difficulté est maintenant: " + difficulte;
+        calibrationResultsText.text = "Ton niveau estimé est: " + difficulte + "\net ta difficulté est maintenant: " + difficulte;
+        pictureSlider.value = difficulte;
         resultsText.text = "";
         exerciceStep.text = "";
+        
+        CalibrationButtonCanva.SetActive(false);
         StopBreathingProcess();
 }
 
@@ -413,6 +453,7 @@ public void StopCalibration(){
 public void StartGame()
     {
         PictureMenu.SetActive(false);
+        BPMCanvas.SetActive(true);
         ExerciceCanvas.SetActive(true);
         setOpacity(0);
         ChangeDifficulte();
@@ -500,7 +541,7 @@ private void CheckCalibrationFinished(){
                 totalSuccessRate += successRate;
                 count++;
                 
-                if (calibration_time > 60)
+                if (calibration_time > 20)
                 {
                     int averageSuccessRate = count > 0 ? Mathf.RoundToInt(totalSuccessRate / count) : 0;
                     difficulte = averageSuccessRate;
@@ -561,23 +602,23 @@ private void CheckCalibrationFinished(){
             UnityEngine.Debug.Log($"New data detected! Number: {newNumber}, Duration: {duration}, Type: {type}, SuccessRate: {successRate}%");
 
             // **存储到变量，不直接修改 UI**
-            latestResultText = $"Last {duration} seconds {type} success rate is {successRate}%";
+            latestResultText = $"Les dernières {duration} secondes, le taux de succès est : {successRate}%";
             isNewResultAvailable = true; // 标记有新数据
             if(duration == "7"){
-                time_value = 0;
+                // time_value = Time.time;
                 exerciceStepText = $"Expirez pendant 8 s";
                 play_8_s = true;
             }
 
             else if(duration == "4"){
-                time_value = 0;
+                // time_value = Time.time;
                 exerciceStepText = $"Tenez votre respiration pendant 7 s";
                 play_7_s = true;
             }
             
             else if(duration == "8" && inGame) 
             {
-                time_value = 0;
+                // time_value = Time.time;
                 exerciceStepText = $"Inspirez pendant 4 s";
                 play_4_s = true;
             }
@@ -607,6 +648,7 @@ public void StartBreathingGame()
     LoadConfig(); // 确保在启动前加载配置
 
     ExerciceCanvas.SetActive(true);
+    BPMCanvas.SetActive(true);
     resultsText.text = "Connexion des capteurs en cours...";
 
     if (!File.Exists(resultsFilePath))
@@ -679,12 +721,12 @@ public void StartBreathingGame()
 
 private void StopBreathingProcess()
     {
-        if (breathingProcess != null && !breathingProcess.HasExited)
-        {
-            UnityEngine.Debug.Log("Stopping Python script...");
-            breathingProcess.Kill();
-            breathingProcess.Dispose();
-        }
+        // if (breathingProcess != null && !breathingProcess.HasExited)
+        // {
+        //     UnityEngine.Debug.Log("Stopping Python script...");
+        //     breathingProcess.Kill();
+        //     breathingProcess.Dispose();
+        // }
     }
 
 public void StopExercice(){
@@ -700,14 +742,17 @@ public void StopExercice(){
     public void CloseGame()
     {
         ExerciceCanvas.SetActive(false);
+        BPMCanvas.SetActive(false);
         exerciceMusic.Stop();
         playerMovement.canMove = true;
+        mouseControl.playerRotation = true;
+        inGame = false;
         if (inCalibration){
             StopCalibration();
         }
         StopBreathingProcess();
         calibrationResultsText.text = "";
-        NiveauEstime.text = "";
+        NiveauEstime.text = "Niveau estimé: ";
         exerciceStep.text = "";
     }
 

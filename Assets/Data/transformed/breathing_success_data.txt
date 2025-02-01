@@ -1,2 +1,1 @@
 number	cycle	long	type	successrate
-0	1	4	inspire	48.72

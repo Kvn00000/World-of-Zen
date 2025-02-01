@@ -294,7 +294,6 @@ public class BitalinoScript : MonoBehaviour
         var data = File.ReadLines(cheminFichier).ToList();
 
         var BPMdernieresLignes = data.Skip(Math.Max(0, data.Count - 250)).Skip(1).ToList();
-        UnityEngine.Debug.Log("BPMdernieresLignes: " + BPMdernieresLignes[0]);
         List<int> signalCardiaque = BPMdernieresLignes
                         .Select(line => line.Split(' ')) // Séparer les colonnes
                         .Where(parts => parts.Length > 1) // Vérifier qu'on a bien assez de colonnes
@@ -313,9 +312,12 @@ public class BitalinoScript : MonoBehaviour
             }
         }
         battements = battements * 3;
-        bpmInput.text = battements.ToString();
 
-        UnityEngine.Debug.Log("BPM: " + battements);
+        if(battements > 100){
+            bpmInput.text = "Attention ton BPM est très haut : " + battements.ToString();
+        }else{
+            bpmInput.text = battements.ToString();
+        }
 
     }
 
