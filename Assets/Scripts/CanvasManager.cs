@@ -439,9 +439,10 @@ public void StartCalibration(){
 public void StopCalibration(){
         UnityEngine.Debug.Log("Calibration stopped.");
         inCalibration = false;
-        NiveauEstime.text = "Niveau estimé: " + difficulte;
         calibrationResultsText.text = "Ton niveau estimé est: " + difficulte + "\net ta difficulté est maintenant: " + difficulte;
         pictureSlider.value = difficulte;
+        NiveauEstime.text = "Niveau estimé: " + difficulte;
+        exitButtonCanva.SetActive(true);
         resultsText.text = "";
         exerciceStep.text = "";
         
@@ -541,7 +542,7 @@ private void CheckCalibrationFinished(){
                 totalSuccessRate += successRate;
                 count++;
                 
-                if (calibration_time > 20)
+                if (calibration_time > 30)
                 {
                     int averageSuccessRate = count > 0 ? Mathf.RoundToInt(totalSuccessRate / count) : 0;
                     difficulte = averageSuccessRate;
@@ -752,7 +753,7 @@ public void StopExercice(){
         }
         StopBreathingProcess();
         calibrationResultsText.text = "";
-        NiveauEstime.text = "Niveau estimé: ";
+        // NiveauEstime.text = "Niveau estimé: ";
         exerciceStep.text = "";
     }
 
